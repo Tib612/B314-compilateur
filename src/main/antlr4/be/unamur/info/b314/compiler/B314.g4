@@ -3,13 +3,20 @@ import B314Words;
 
 root: ID;
 programme: DECLARE AND RETAIN
+            ((
                 ( varDecl SEMICOLON | fctDecl )*
                 ( instruction )*
-                clauseDefault
-                ;
+            ) | (
+                ( varDecl SEMICOLON | fctDecl | impDecl )*
+                WHEN YOUR TURN
+                ( clauseWhen )*
+            ))
+            clauseDefault
+            ;
+
 clauseDefault: BY DEFAULT
                 (DECLARE LOCAL (varDecl SEMICOLON)+)?
-                DO (instruction)* DONE          //instruction + -> *
+                DO (instruction)+ DONE          //instruction + -> *
                 ;
 varDecl: ID AS type
          ;
@@ -19,7 +26,8 @@ fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (SCALAR | VO
          ;
 type: SCALAR | ARRAY
        ;
-instruction: IF exprD THEN instruction * DONE           //instruction + -> *
+instruction: SKIPINS
+             | IF exprD THEN instruction * DONE           //instruction + -> *
              | IF exprD THEN instruction * ELSE instruction * DONE          //instruction + -> *
              | WHILE exprD DO instruction * DONE            //instruction + -> *
              | SET exprG TO exprD
@@ -78,3 +86,10 @@ action: MOVE ( NORTH | SOUTH | EAST | WEST)
         | USE ( MAP | RADIO | FRUITS | SODA)
         | DO NOTHING
         ;
+
+impDecl: IMPORT FILEDECL ;
+
+clauseWhen: WHEN exprD
+            (DECLARE LOCAL (varDecl SEMICOLON)+)?
+            DO (instruction)* DONE
+            ;

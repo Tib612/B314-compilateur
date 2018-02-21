@@ -1,4 +1,4 @@
-// Generated from C:/Users/thibaut/IdeaProjects/b314-compiler/src/main/antlr4/be/unamur/info/b314/compiler\B314.g4 by ANTLR 4.7
+// Generated from /home/users/100/tndao/Documents/M0/Q2/Compilers/Projet/1718_INFOB314_COMPILATEUR_GROUPE12/src/main/antlr4/be/unamur/info/b314/compiler/B314.g4 by ANTLR 4.7
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -116,4 +116,24 @@ public interface B314Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAction(B314Parser.ActionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link B314Parser#impDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterImpDecl(B314Parser.ImpDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link B314Parser#impDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitImpDecl(B314Parser.ImpDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link B314Parser#clauseWhen}.
+	 * @param ctx the parse tree
+	 */
+	void enterClauseWhen(B314Parser.ClauseWhenContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link B314Parser#clauseWhen}.
+	 * @param ctx the parse tree
+	 */
+	void exitClauseWhen(B314Parser.ClauseWhenContext ctx);
 }

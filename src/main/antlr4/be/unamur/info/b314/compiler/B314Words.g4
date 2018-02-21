@@ -72,6 +72,11 @@ LATITUDE: 'latitude';
 LONGITUDE: 'longitude';
 GRID: 'grid';
 SIZE: 'size';
+WHEN: 'when';
+YOUR: 'your';
+TURN: 'turn';
+IMPORT: 'import';
+SKIPINS: 'skip';
 
 // Types
 BOOLEAN: 'boolean';
@@ -89,6 +94,7 @@ NEWLINE: '\r'? '\n'  -> skip ;
 WS: [ \t]+ -> skip ;
 
 // Identifiers
+FILEDECL: ID'.wld';
 ID: LETTER (LETTER | DIGIT)* ;
 NUMBER: (DIGIT)+;
 fragment LETTER: 'A'..'Z' | 'a'..'z' ;

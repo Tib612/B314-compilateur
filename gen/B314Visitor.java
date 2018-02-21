@@ -1,4 +1,4 @@
-// Generated from C:/Users/thibaut/IdeaProjects/b314-compiler/src/main/antlr4/be/unamur/info/b314/compiler\B314.g4 by ANTLR 4.7
+// Generated from /home/users/100/tndao/Documents/M0/Q2/Compilers/Projet/1718_INFOB314_COMPILATEUR_GROUPE12/src/main/antlr4/be/unamur/info/b314/compiler/B314.g4 by ANTLR 4.7
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -75,4 +75,16 @@ public interface B314Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAction(B314Parser.ActionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#impDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImpDecl(B314Parser.ImpDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#clauseWhen}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClauseWhen(B314Parser.ClauseWhenContext ctx);
 }
