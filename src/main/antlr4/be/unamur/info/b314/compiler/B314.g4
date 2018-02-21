@@ -16,25 +16,24 @@ programme: DECLARE AND RETAIN
 
 clauseDefault: BY DEFAULT
                 (DECLARE LOCAL (varDecl SEMICOLON)+)?
-                DO (instruction)+ DONE          //instruction + -> *
+                DO (instruction)+ DONE
                 ;
 varDecl: ID AS type
          ;
 fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (SCALAR | VOID)
          (DECLARE LOCAL (varDecl SEMICOLON)+) ?
-         DO (instruction)* RETURN ID DONE           //instruction + -> *
+         DO (instruction)+ RETURN ID DONE
          ;
 type: SCALAR | ARRAY
        ;
 instruction: SKIPINS
-             | IF exprD THEN instruction * DONE           //instruction + -> *
-             | IF exprD THEN instruction * ELSE instruction * DONE          //instruction + -> *
-             | WHILE exprD DO instruction * DONE            //instruction + -> *
+             | IF exprD THEN instruction + DONE
+             | IF exprD THEN instruction + ELSE instruction + DONE
+             | WHILE exprD DO instruction + DONE
              | SET exprG TO exprD
              | COMPUTE exprD
              | NEXT action
-             ;   // le "skip" repésente un string vide. or il y en a une infinité => il suffit de rendre "insruction" facultatif partout (+ -> *)
-                 // https://stackoverflow.com/questions/13289263/antlr-empty-condition-not-working
+             ;
 exprD: exprCase
        | exprG
        | ID LPAR (exprD (COMMA exprD)*)? RPAR
@@ -91,5 +90,5 @@ impDecl: IMPORT FILEDECL ;
 
 clauseWhen: WHEN exprD
             (DECLARE LOCAL (varDecl SEMICOLON)+)?
-            DO (instruction)* DONE
+            DO (instruction)+ DONE
             ;
