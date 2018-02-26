@@ -62,4 +62,9 @@ public class B314commentsSyntaxTest {
         CompilerTestHelper.launchCompilation("/syntax/comments/ko/missing_default_bloc.b314", testFolder.newFile(), false, "comments: missing_default_bloc");
     }
 
+    //ajouté par Thibaut
+    @Test
+    public void testcomments_wrong_array_size_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/comments/ko/wrong_array_size_ko.b314", testFolder.newFile(), false, "comments: wrong_array_size");
+    }
 }

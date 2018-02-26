@@ -1,0 +1,7 @@
+declare and retain
+test as integer;
+id as boolean[10,5];
+id2 as boolean[10];
+id3 as boolean[10,05];
+id4 as boolean[0,5];
+ by default do skip done

@@ -64,9 +64,8 @@ exprBool: TRUE | FALSE
           | exprD SMALLER exprD
           | exprD BIGGER exprD
           | exprD EQUAL exprD
-          ; */
-
-/*  compressed into exprD
+          ;
+   compressed into exprD
 exprEnt: INT
          | LATITUDE | LONGITUDE | GRID SIZE
          | (MAP | RADIO | AMMO | FRUITS | SODA) COUNT
