@@ -24,8 +24,14 @@ fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (SCALAR | VO
          (DECLARE LOCAL (varDecl SEMICOLON)+) ?
          DO (instruction)+ RETURN ID DONE
          ;
-type: SCALAR | ARRAY
+type: scalar | array
        ;
+scalar : BOOLEAN
+         | INTEGER
+         | SQUARE
+         ;
+array : scalar LBRA INT (COMMA INT)? RBRA
+        ;
 instruction: SKIPINS
              | IF exprD THEN instruction + DONE
              | IF exprD THEN instruction + ELSE instruction + DONE
