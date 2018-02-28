@@ -20,6 +20,10 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import be.unamur.info.b314.compiler.B314Parser;
+import be.unamur.info.b314.compiler.B314Lexer;
+import be.unamur.info.b314.compiler.exception.ParsingException;
+
 /**
  *
  * @author Xavier Devroey - xavier.devroey@unamur.be
@@ -80,7 +84,9 @@ public class Main {
      * The output PCode file.
      */
     private File outputFile;
-    
+
+    private B314Parser parser;
+
     private Main() {
         // Create command line options
         options = new Options();
@@ -141,12 +147,40 @@ public class Main {
     /**
      * Compiler Methods, this is where the MAGIC happens !!! \o/
      */
-    private void compile() {
-    
-    
+    private void compile() throws IOException, ParsingException {
+        // Get abstract syntax tree
+        LOG.debug("Parsing input");
+        B314Parser.ProgrammeContext tree = parse(new ANTLRInputStream(new FileInputStream(inputFile)));
+        LOG.debug("Parsing input: done");
+        LOG.debug("AST is {}", tree.toStringTree(parser));
        // Put your code here !
-       
-       
     }
+
+
+    /**
+     * Builds the abstract syntax tree from input.
+     */
+    private B314Parser.ProgrammeContext parse(ANTLRInputStream input) throws ParseCancellationException, ParsingException {
+        // Create the token stream
+        CommonTokenStream tokens = new CommonTokenStream(new B314Lexer(input));
+        // Intialise parser
+        parser = new B314Parser(tokens);
+        // Set error listener to adoc implementation
+        parser.removeErrorListeners();
+        MyConsoleErrorListener errorListener = new MyConsoleErrorListener();
+        parser.addErrorListener(errorListener);
+        // Launch parsing
+        B314Parser.ProgrammeContext tree;
+        try {
+            tree = parser.programme();
+        } catch (RecognitionException e) {
+            throw new ParsingException("Error while retrieving parsing tree!", e);
+        }
+        if (errorListener.errorHasBeenReported()) {
+            throw new ParsingException("Error while parsing input!");
+        }
+        return tree;
+    }
+
 
 }
