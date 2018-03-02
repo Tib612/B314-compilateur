@@ -44,6 +44,11 @@ public class B314commentsSyntaxTest {
         CompilerTestHelper.launchCompilation("/syntax/comments/ok/empty_multiple_lines_and_tab.b314", testFolder.newFile(), true, "comments: empty_multiple_lines_and_tab");
     }
 
+    @Test
+    public void test_example_description_monde_ok() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/comments/ok/description_monde.b314", testFolder.newFile(), true, "Description du monde");
+    }
+
     //
     // Serie comments KO
     //
