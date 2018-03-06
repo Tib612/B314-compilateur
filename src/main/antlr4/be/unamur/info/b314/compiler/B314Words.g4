@@ -83,12 +83,12 @@ TRUE: 'true';
 FALSE: 'false';
 VOID: 'void';
 
-/*SCALAR : BOOLEAN
+SCALAR : BOOLEAN
          | INTEGER
          | SQUARE
          ;
 ARRAY : SCALAR LBRA INT (COMMA INT)? RBRA
-        ;*/
+        ;
 
 // Comments -> ignored
 COMMENT: '/*' .*? '*/' -> skip;
