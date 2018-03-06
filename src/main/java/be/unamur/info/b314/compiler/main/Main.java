@@ -153,7 +153,6 @@ public class Main {
         B314Parser.ProgrammeContext tree = parse(new ANTLRInputStream(new FileInputStream(inputFile)));
         LOG.debug("Parsing input: done");
         LOG.debug("AST is {}", tree.toStringTree(parser));
-       // Put your code here !
     }
 
 

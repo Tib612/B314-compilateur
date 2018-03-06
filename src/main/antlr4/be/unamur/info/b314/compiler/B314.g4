@@ -20,18 +20,22 @@ clauseDefault: BY DEFAULT
                 ;
 varDecl: ID AS type
          ;
-fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (scalar | VOID)
+fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (SCALAR | VOID)
          (DECLARE LOCAL (varDecl SEMICOLON)+) ?
          DO (instruction)+ RETURN ID DONE
          ;
-type: scalar | array
-       ;
-scalar : BOOLEAN
-         | INTEGER
-         | SQUARE
-         ;
-array : scalar LBRA INT (COMMA INT)? RBRA
-        ;
+
+//type: scalar | array
+//       ;
+//scalar : BOOLEAN
+//         | INTEGER
+//         | SQUARE
+//         ;
+//array : scalar LBRA INT (COMMA INT)? RBRA
+//        ;
+
+type: SCALAR | ARRAY;
+
 instruction: SKIPINS
              | IF exprD THEN instruction + DONE
              | IF exprD THEN instruction + ELSE instruction + DONE
