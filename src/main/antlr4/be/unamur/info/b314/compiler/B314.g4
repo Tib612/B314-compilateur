@@ -20,7 +20,7 @@ clauseDefault: BY DEFAULT
                 ;
 varDecl: ID AS type
          ;
-fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (SCALAR | VOID)
+fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (scalar | VOID)
          (DECLARE LOCAL (varDecl SEMICOLON)+) ?
          DO (instruction)+ RETURN ID DONE
          ;
@@ -40,7 +40,7 @@ instruction: SKIPINS
              | COMPUTE exprD
              | NEXT action
              ;
-exprD: exprCase
+exprD:  exprCase
        | exprG
        | ID LPAR (exprD (COMMA exprD)*)? RPAR
        | LPAR exprD RPAR
@@ -50,8 +50,12 @@ exprD: exprCase
 exprBool:
         TRUE | FALSE
        | (ENNEMI|GRAAL) IS ( NORTH | SOUTH | EAST | WEST)
-       | exprBool (AND | OR | SMALLER | BIGGER | EQUAL) exprBool
+//       | exprBool (AND | OR | SMALLER | BIGGER | EQUAL) exprBool
+       | exprBool (AND | OR | EQUAL) exprBool // ref 5.2.1 Verification des types, point 2 (and, or) & 5 (equal)
        | NOT exprBool
+       | exprEnt (SMALLER | BIGGER | EQUAL) exprEnt // ref 5.2.1 point 4 & 5
+       | exprCase EQUAL exprCase // ref 5.2.1 point 5 (l'expr est bien typee si les operands sont tous les deux de type de case)
+       | exprG // pour couvrir tous les formes d'une expression droite
        ;
 exprEnt:
         INT
@@ -59,6 +63,7 @@ exprEnt:
        | (MAP | RADIO | AMMO | FRUITS | SODA) COUNT
        | LIFE
        | exprEnt (PLUS | MINUS | MULT | DIV | MODULO ) exprEnt
+       | exprG // pour couvrir tous les formes d'une expression droite
        ;   //  https://stackoverflow.com/questions/20791690/how-to-avoid-mutual-left-recursion-in-antlr-4
            // problèmes de mutual-left-recursion nous force a inculre exprBool et exprEnt dans exprD.
 exprCase: DIRT | ROCK| VINES | ZOMBIE | PLAYER | ENNEMI | MAP | RADIO | AMMO | FRUITS | SODA | GRAAL
