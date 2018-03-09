@@ -19,9 +19,6 @@ BIGGER: '>';
 AND: 'and';
 OR: 'or';
 
-//specific expressions
-SCALAR : BOOLEAN | INTEGER | SQUARE;
-ARRAY : SCALAR LBRA NUMBER (COMMA NUMBER)? RBRA;   // ne représente qu'un "mot". e.g. "integer[10,8]"
 
 //words
 DECLARE: 'declare';
@@ -81,7 +78,7 @@ SKIPINS: 'skip';
 // Types
 BOOLEAN: 'boolean';
 INTEGER: 'integer';
-INT: (MINUS)? NUMBER;
+INT: (MINUS)? [1-9](DIGIT)*| '0' ;
 TRUE: 'true';
 FALSE: 'false';
 VOID: 'void';
@@ -96,6 +93,5 @@ WS: [ \t]+ -> skip ;
 // Identifiers
 FILEDECL: ID'.wld';
 ID: LETTER (LETTER | DIGIT)* ;
-NUMBER: [1-9] (DIGIT)*;     // modifié car un int ne commence jamais par un "0"
 fragment LETTER: 'A'..'Z' | 'a'..'z' ;
 fragment DIGIT: '0'..'9' ;
