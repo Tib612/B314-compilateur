@@ -164,6 +164,7 @@ public class Main {
         CommonTokenStream tokens = new CommonTokenStream(new B314Lexer(input));
         // Intialise parser
         parser = new B314Parser(tokens);
+        parser.setTrace(true);
         // Set error listener to adoc implementation
         parser.removeErrorListeners();
         MyConsoleErrorListener errorListener = new MyConsoleErrorListener();
