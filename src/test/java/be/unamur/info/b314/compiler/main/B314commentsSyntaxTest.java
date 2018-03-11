@@ -50,6 +50,12 @@ public class B314commentsSyntaxTest {
         CompilerTestHelper.launchCompilation("/syntax/comments/ok/description_monde.b314", testFolder.newFile(), true, "Description du monde");
     }
 
+
+    @Test
+    public void test_example_strategy_ok() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/comments/ok/parentheses_intExp.b314", testFolder.newFile(), true, "Strategy");
+    }
+
     //
     // Serie comments KO
     //

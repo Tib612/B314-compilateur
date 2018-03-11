@@ -55,6 +55,7 @@ exprBool:
        | exprEnt (SMALLER | BIGGER | EQUAL) exprEnt // ref 5.2.1 point 4 & 5
        | exprCase EQUAL exprCase // ref 5.2.1 point 5 (l'expr est bien typee si les operands sont tous les deux de type de case)
        | ID LPAR (exprD (COMMA exprD)*)? RPAR // une fonction retournant un boolean
+       | LPAR exprBool RPAR // pour couvrir tous les formes d'une expression droite
        | exprG // pour couvrir tous les formes d'une expression droite
        ;
 exprEnt:
@@ -64,6 +65,7 @@ exprEnt:
        | LIFE
        | exprEnt (PLUS | MINUS | MULT | DIV | MODULO ) exprEnt
        | ID LPAR (exprD (COMMA exprD)*)? RPAR // fonction retournant un entier
+       | LPAR exprEnt RPAR // pour couvrir tous les formes d'une expression droite
        | exprG // pour couvrir tous les formes d'une expression droite
        ;   //  https://stackoverflow.com/questions/20791690/how-to-avoid-mutual-left-recursion-in-antlr-4
            // problèmes de mutual-left-recursion nous force a inculre exprBool et exprEnt dans exprD.

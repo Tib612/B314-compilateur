@@ -1,0 +1,4 @@
+declare and retain
+by default do
+	compute nearby [1 -(2 + 5), 2]
+done
