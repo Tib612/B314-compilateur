@@ -39,20 +39,20 @@ public class B314commentsSyntaxTest {
         CompilerTestHelper.launchCompilation("/syntax/comments/ok/empty.b314", testFolder.newFile(), true, "comments: empty");
     }
 
-    // par tndao
     @Test
     public void testcomments_empty_multiple_lines_and_tab_ok() throws Exception{
         CompilerTestHelper.launchCompilation("/syntax/comments/ok/empty_multiple_lines_and_tab.b314", testFolder.newFile(), true, "comments: empty_multiple_lines_and_tab");
     }
 
+    // par tndao
     @Test
     public void test_example_description_monde_ok() throws Exception {
         CompilerTestHelper.launchCompilation("/syntax/comments/ok/description_monde.b314", testFolder.newFile(), true, "Description du monde");
     }
 
-
+    // par tndao
     @Test
-    public void test_example_strategy_ok() throws Exception {
+    public void test_parentheses_ok() throws Exception {
         CompilerTestHelper.launchCompilation("/syntax/comments/ok/parentheses_intExp.b314", testFolder.newFile(), true, "Strategy");
     }
 

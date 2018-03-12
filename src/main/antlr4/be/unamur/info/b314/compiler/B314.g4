@@ -70,7 +70,8 @@ exprEnt:
        ;   //  https://stackoverflow.com/questions/20791690/how-to-avoid-mutual-left-recursion-in-antlr-4
            // problèmes de mutual-left-recursion nous force a inculre exprBool et exprEnt dans exprD.
 exprCase: DIRT | ROCK| VINES | ZOMBIE | PLAYER | ENNEMI | MAP | RADIO | AMMO | FRUITS | SODA | GRAAL
-          | NEARBY LBRA exprD COMMA exprD RBRA
+       | NEARBY LBRA exprD COMMA exprD RBRA
+       | exprG // un ID de type Case ou un element d'un array de type Case
           ;
 exprG: ID
        | ID LBRA exprD (COMMA exprD)? RBRA
