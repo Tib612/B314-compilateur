@@ -71,6 +71,7 @@ exprEnt:
            // problèmes de mutual-left-recursion nous force a inculre exprBool et exprEnt dans exprD.
 exprCase: DIRT | ROCK| VINES | ZOMBIE | PLAYER | ENNEMI | MAP | RADIO | AMMO | FRUITS | SODA | GRAAL
        | NEARBY LBRA exprD COMMA exprD RBRA
+       | ID LPAR (exprD (COMMA exprD)*)? RPAR // fonction retournant une value de type Case
        | exprG // un ID de type Case ou un element d'un array de type Case
           ;
 exprG: ID
