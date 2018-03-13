@@ -30,16 +30,13 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitVarDecl(B314Parser.VarDeclContext ctx) 
-		throws VariableAlreadyDefinedException {
+	public Void visitVarDecl(B314Parser.VarDeclContext ctx) throws RuntimeException {
 
 		String id = ctx.ID().getSymbol().getText();
 		
 		// check if id existed
 		if (variables.containsKey(id)) {
-			throw new VariableAlreadyDefinedException(
-				"Error: Variable " + id + " is already defined!"
-			);
+			throw new RuntimeException("Error at " + ctx.getText() + ": Variable " + id + " is already defined!");
 		}
 
 		String typeStr = "";
@@ -56,7 +53,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			int arrDims = arrType.INT().size();
 			typeStr = arrTypeStr + "_" + arrDims;
 
-			// TODO check negative array size
+			// check negative array size
+			if (Integer.parseInt(arrType.INT(0).getText()) < 0 
+				|| (arrDims == 2 && Integer.parseInt(arrType.INT(1).getText()) < 0)) {
+
+				throw new RuntimeException("Error at " + ctx.getText() + ": Array size must be positive!");
+			} 
 
 			LOG.debug("A " + arrDims + "D array of type " + arrTypeStr + " was declared and named " + id);
 		}
