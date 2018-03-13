@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-// import be.unamur.info.b314.compiler.exception.VariableAlreadyDefinedException;
+import be.unamur.info.b314.compiler.exception.VariableAlreadyDefinedException;
 // import be.unamur.info.b314.compiler.B314BaseVisitor;
 
 
@@ -30,13 +30,15 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitVarDecl(B314Parser.VarDeclContext ctx) throws RuntimeException {
+	public Void visitVarDecl(B314Parser.VarDeclContext ctx) 
+		throws VariableAlreadyDefinedException, NegativeArraySizeException {
 
 		String id = ctx.ID().getSymbol().getText();
 		
 		// check if id existed
 		if (variables.containsKey(id)) {
-			throw new RuntimeException("Error at " + ctx.getText() + ": Variable " + id + " is already defined!");
+			throw new VariableAlreadyDefinedException(
+				"Error at " + ctx.getText() + ": Variable " + id + " is already defined!");
 		}
 
 		String typeStr = "";
@@ -57,12 +59,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			if (Integer.parseInt(arrType.INT(0).getText()) < 0 
 				|| (arrDims == 2 && Integer.parseInt(arrType.INT(1).getText()) < 0)) {
 
-				throw new RuntimeException("Error at " + ctx.getText() + ": Array size must be positive!");
+				throw new NegativeArraySizeException(
+					"Error at " + ctx.getText() + ": Array size must be positive!");
 			} 
 
 			LOG.debug("A " + arrDims + "D array of type " + arrTypeStr + " was declared and named " + id);
 		}
-
 
 		variables.put(id, typeStr);
 
