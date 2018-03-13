@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import be.unamur.info.b314.compiler.exception.VariableAlreadyDefinedException;
+// import be.unamur.info.b314.compiler.exception.VariableAlreadyDefinedException;
 // import be.unamur.info.b314.compiler.B314BaseVisitor;
 
 
