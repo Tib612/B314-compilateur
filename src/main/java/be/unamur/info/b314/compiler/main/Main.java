@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import be.unamur.info.b314.compiler.B314Parser;
 import be.unamur.info.b314.compiler.B314Lexer;
 import be.unamur.info.b314.compiler.exception.ParsingException;
+import be.unamur.info.b314.compiler.B314VisitorImpl;
 
 /**
  *
@@ -153,6 +154,10 @@ public class Main {
         B314Parser.ProgrammeContext tree = parse(new ANTLRInputStream(new FileInputStream(inputFile)));
         LOG.debug("Parsing input: done");
         LOG.debug("AST is {}", tree.toStringTree(parser));
+
+        LOG.debug("Verifying input");
+        B314VisitorImpl visitor = new B314VisitorImpl();
+        visitor.visit(tree);
     }
 
 
