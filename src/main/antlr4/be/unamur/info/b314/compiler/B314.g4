@@ -75,7 +75,7 @@ exprCase: DIRT | ROCK| VINES | ZOMBIE | PLAYER | ENNEMI | MAP | RADIO | AMMO | F
        | exprG // un ID de type Case ou un element d'un array de type Case
           ;
 exprG: ID
-       | ID LBRA exprD (COMMA exprD)? RBRA
+       | ID LBRA exprEnt (COMMA exprEnt)? RBRA
        ;
 action: MOVE ( NORTH | SOUTH | EAST | WEST)
         | SHOOT ( NORTH | SOUTH | EAST | WEST)
