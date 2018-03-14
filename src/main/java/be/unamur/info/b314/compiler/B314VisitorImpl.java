@@ -4,9 +4,10 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import be.unamur.info.b314.compiler.exception.VariableAlreadyDefinedException;
+import be.unamur.info.b314.compiler.exception.*;
 // import be.unamur.info.b314.compiler.B314BaseVisitor;
 
 
@@ -76,6 +77,26 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 		variables.put(id, typeStr);
 
+		return null;
+	}
+
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#exprG}.
+	 * This implementation version assumes that all the variables are global 
+	 * (i.e. there is no function in the program...)
+	 *
+	 * @throws ElementUndefinedException if the id of this expression was not declared.
+	 */
+	@Override
+	public Void visitExprG(B314Parser.ExprGContext ctx) { 
+		Token gid = ctx.ID().getSymbol();
+		String gidStr = gid.getText();
+
+		if (!variables.containsKey(gidStr)) {
+			throw new ElementUndefinedException(
+				gid + " The variable " + gidStr + " might not be defined!");
+		}
+		
 		return null;
 	}
 

@@ -1,0 +1,5 @@
+/* Comments are between delimiters */
+declare and retain
+by default do
+    set i to 2
+done

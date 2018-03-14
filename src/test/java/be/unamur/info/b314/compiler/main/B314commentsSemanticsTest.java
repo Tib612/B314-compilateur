@@ -30,30 +30,30 @@ public class B314commentsSemanticsTest {
     ;
     };
 
-    @Test
-    public void testcomments_empty() throws Exception{
-        File pcodeFile = testFolder.newFile();
-        CompilerTestHelper.launchCompilation("/semantics/comments/empty.b314", pcodeFile, true, "comments: empty");
-        LOG.debug("PCode is: {{}", FileUtils.readFileToString(pcodeFile));
-        InterpreterResult result;
-        // Turns: 1
-        LOG.debug("Starting interpretation with 1 turn");
-        result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 1);
-        assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
-        assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(1));
-        assertThat(result.getOutLines(), contains("0"));
-        // Turns: 3
-        LOG.debug("Starting interpretation with 3 turn");
-        result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 3);
-        assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
-        assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(3));
-        assertThat(result.getOutLines(), contains("0", "0", "0"));
-        // Turns 5
-        LOG.debug("Starting interpretation with 5 turn");
-        result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 5);
-        assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
-        assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(5));
-        assertThat(result.getOutLines(), contains("0", "0", "0", "0", "0"));
-    }
+    // @Test
+    // public void testcomments_empty() throws Exception{
+    //     File pcodeFile = testFolder.newFile();
+    //     CompilerTestHelper.launchCompilation("/semantics/comments/empty.b314", pcodeFile, true, "comments: empty");
+    //     LOG.debug("PCode is: {{}", FileUtils.readFileToString(pcodeFile));
+    //     InterpreterResult result;
+    //     // Turns: 1
+    //     LOG.debug("Starting interpretation with 1 turn");
+    //     result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 1);
+    //     assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
+    //     assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(1));
+    //     assertThat(result.getOutLines(), contains("0"));
+    //     // Turns: 3
+    //     LOG.debug("Starting interpretation with 3 turn");
+    //     result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 3);
+    //     assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
+    //     assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(3));
+    //     assertThat(result.getOutLines(), contains("0", "0", "0"));
+    //     // Turns 5
+    //     LOG.debug("Starting interpretation with 5 turn");
+    //     result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 5);
+    //     assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
+    //     assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(5));
+    //     assertThat(result.getOutLines(), contains("0", "0", "0", "0", "0"));
+    // }
 
 }
