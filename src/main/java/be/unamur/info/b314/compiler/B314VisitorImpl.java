@@ -29,6 +29,14 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		 variables = new HashMap<String, String>();
 	}
 
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#varDecl}.
+	 *
+	 * @param ctx the parse tree representing the variable declaration syntax.
+	 * @throws VariableAlreadyDefinedException if the id of the variable is occuped by another variable.
+	 * @throws NegativeArraySizeException if the variable is of type array and its size is negative.
+	 * @effects otherwise, the variable information (name, type) is inserted into the hashmap variables.
+	 */
 	@Override
 	public Void visitVarDecl(B314Parser.VarDeclContext ctx) 
 		throws VariableAlreadyDefinedException, NegativeArraySizeException {
