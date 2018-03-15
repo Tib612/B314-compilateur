@@ -23,7 +23,6 @@ public class B314commentsSyntaxTest {
             LOG.info(String.format("Starting test: %s()...",
                     description.getMethodName()));
         }
-    ;
     };
 
     
