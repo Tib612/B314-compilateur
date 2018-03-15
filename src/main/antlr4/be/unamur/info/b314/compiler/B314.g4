@@ -46,10 +46,10 @@ exprD:  exprG
        | exprBool
        | exprEnt
        ;
+
 exprBool:
         TRUE | FALSE
        | (ENNEMI|GRAAL) IS ( NORTH | SOUTH | EAST | WEST)
-//       | exprBool (AND | OR | SMALLER | BIGGER | EQUAL) exprBool
        | exprBool (AND | OR | EQUAL) exprBool // ref 5.2.1 Verification des types, point 2 (and, or) & 5 (equal)
        | NOT exprBool
        | exprEnt (SMALLER | BIGGER | EQUAL) exprEnt // ref 5.2.1 point 4 & 5
@@ -58,22 +58,22 @@ exprBool:
        | LPAR exprBool RPAR // pour couvrir tous les formes d'une expression droite
        | exprG // pour couvrir tous les formes d'une expression droite
        ;
+
 exprEnt:
         INT
        | LATITUDE | LONGITUDE | GRID SIZE
        | (MAP | RADIO | AMMO | FRUITS | SODA) COUNT
        | LIFE
        | exprEnt (PLUS | MINUS | MULT | DIV | MODULO ) exprEnt
-       | ID LPAR (exprD (COMMA exprD)*)? RPAR // fonction retournant un entier
-       | LPAR exprEnt RPAR // pour couvrir tous les formes d'une expression droite
-       | exprG // pour couvrir tous les formes d'une expression droite
-       ;   //  https://stackoverflow.com/questions/20791690/how-to-avoid-mutual-left-recursion-in-antlr-4
-           // problèmes de mutual-left-recursion nous force a inculre exprBool et exprEnt dans exprD.
+       | ID LPAR (exprD (COMMA exprD)*)? RPAR 
+       | LPAR exprEnt RPAR 
+       | exprG 
+       ;  
+
 exprCase: DIRT | ROCK| VINES | ZOMBIE | PLAYER | ENNEMI | MAP | RADIO | AMMO | FRUITS | SODA | GRAAL
-       | NEARBY LBRA exprD COMMA exprD RBRA
-       | ID LPAR (exprD (COMMA exprD)*)? RPAR // fonction retournant une value de type Case
-       | exprG // un ID de type Case ou un element d'un array de type Case
-          ;
+       | NEARBY LBRA exprEnt COMMA exprEnt RBRA
+       ;
+
 exprG: ID
        | ID LBRA exprEnt (COMMA exprEnt)? RBRA
        ;
