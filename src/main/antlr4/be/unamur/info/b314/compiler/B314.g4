@@ -39,8 +39,8 @@ instruction: SKIPINS
              | COMPUTE exprD
              | NEXT action
              ;
-exprD:  exprCase
-       | exprG
+exprD:  exprG
+       | exprCase
        | ID LPAR (exprD (COMMA exprD)*)? RPAR
        | LPAR exprD RPAR
        | exprBool

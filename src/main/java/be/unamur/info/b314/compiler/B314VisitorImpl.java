@@ -96,7 +96,46 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			throw new ElementUndefinedException(
 				gid + " The variable " + gidStr + " might not be defined!");
 		}
-		
+
+		return null;
+	}
+
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#instruction}.
+	 * 
+	 * @throws TypeMismatchException if the types of the lhs expression (expression gauche)
+	 *			and rhs expression (expression droite) are different.
+	 */
+	@Override 
+	public Void visitInstruction(B314Parser.InstructionContext ctx) throws TypeMismatchException {
+
+		visitChildren(ctx);
+
+		if (ctx.getStart().getType() == B314Parser.SET) {
+			LOG.debug("An affect instruction found!: " + ctx.getText());
+			
+			String gid = ctx.exprG().ID().getSymbol().getText();
+			String gidType = variables.get(gid).split("_")[0];
+			ParseTree did = ctx.exprD().getChild(0);
+			if (did instanceof B314Parser.ExprCaseContext) {
+				// TODO
+
+			} else if (did instanceof B314Parser.ExprGContext) {
+				// get the id string of the exprG which is the child of the exprD
+				String subDid = ((B314Parser.ExprGContext)did).ID().getSymbol().getText(); 
+				String subDidType = variables.get(subDid).split("_")[0];
+				
+				if (!gidType.equals(subDidType)) {
+					throw new TypeMismatchException(
+						ctx + 
+						" There is a type mismatch between the two side of the expression"
+					);
+				}
+
+			}
+
+		}
+
 		return null;
 	}
 

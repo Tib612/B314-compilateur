@@ -1,10 +1,10 @@
 /* Comments are between delimiters */
 declare and retain
     /* Global declarations */
-    i as integer;
-    j as boolean;
+    i as integer[5];
+    j as boolean[8, 3];
 
 by default do
-    set i to 1
-    set j to 1
+    set i[0] to 1
+    set j[2,1] to i[3]
 done
