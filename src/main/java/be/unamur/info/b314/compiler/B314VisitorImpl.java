@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import be.unamur.info.b314.compiler.exception.*;
 // import be.unamur.info.b314.compiler.B314BaseVisitor;
@@ -19,15 +20,19 @@ import be.unamur.info.b314.compiler.exception.*;
  */
 public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
+
     private static final Logger LOG = LoggerFactory.getLogger(B314VisitorImpl.class);
 
-	private HashMap<String, String> variables;
+    // TODO: clean && update documents
+	private HashMap<String, String> variables; 
+	private HashMap<String, B314Parser.TypeContext> globalVars;
 
 	/**
 	 * @effects initialize variables to be an empty map.
 	 */
 	public B314VisitorImpl() {
 		 variables = new HashMap<String, String>();
+		 globalVars = new HashMap<String, B314Parser.TypeContext>();
 	}
 
 	/**
@@ -76,6 +81,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		}
 
 		variables.put(id, typeStr);
+		globalVars.put(id, ctx.type());
 
 		return null;
 	}
@@ -97,6 +103,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 				gid + " The variable " + gidStr + " might not be defined!");
 		}
 
+		// TODO: what if exprG is declared as a 2d array but referred as a 1d array or scalar?
+		
 		return null;
 	}
 
@@ -104,34 +112,57 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * Visit a parse tree produced by {@link B314Parser#instruction}.
 	 * 
 	 * @throws TypeMismatchException if the types of the lhs expression (expression gauche)
-	 *			and rhs expression (expression droite) are different.
+	 *								and rhs expression (expression droite) are different.
+	 * @throws IllegalAffectationException if the lhs or rhs expression is an array (but not an array element)
 	 */
 	@Override 
-	public Void visitInstruction(B314Parser.InstructionContext ctx) throws TypeMismatchException {
+	public Void visitInstruction(B314Parser.InstructionContext ctx) 
+		throws TypeMismatchException, IllegalAffectationException {
 
 		visitChildren(ctx);
 
 		if (ctx.getStart().getType() == B314Parser.SET) {
 			LOG.debug("An affect instruction found!: " + ctx.getText());
 			
-			String gid = ctx.exprG().ID().getSymbol().getText();
-			String gidType = variables.get(gid).split("_")[0];
-			ParseTree did = ctx.exprD().getChild(0);
-			if (did instanceof B314Parser.ExprCaseContext) {
-				// TODO
+			// TODO: What if exprG is an array but not a scalar or an array element?
+			B314Parser.ExprGContext exprG = ctx.exprG();
+			String gid = exprG.ID().getSymbol().getText();
+			ParseTree gType = globalVars.get(gid).getChild(0);
 
-			} else if (did instanceof B314Parser.ExprGContext) {
+			if ((gType instanceof B314Parser.ArrayContext) && exprG.getChildCount() == 1) {
+				throw new IllegalAffectationException(ctx + " The lhs expression cannot be an array!");
+			}
+
+			String gidType = variables.get(gid).split("_")[0];
+
+			ParseTree did = ctx.exprD().getChild(0);
+			if (did instanceof B314Parser.ExprGContext) {
 				// get the id string of the exprG which is the child of the exprD
-				String subDid = ((B314Parser.ExprGContext)did).ID().getSymbol().getText(); 
+			 	String subDid = ((B314Parser.ExprGContext)did).ID().getSymbol().getText(); 
 				String subDidType = variables.get(subDid).split("_")[0];
 				
 				if (!gidType.equals(subDidType)) {
 					throw new TypeMismatchException(
-						ctx + 
-						" There is a type mismatch between the two side of the expression"
-					);
+						ctx + " There is a type mismatch between the two side of the expression");
 				}
 
+			} else if (did instanceof B314Parser.ExprCaseContext) {
+				// TODO A Case can be assigned to an integer variable or an element of an integer array
+				// if (gidType) 
+			} else if (did instanceof B314Parser.ExprBoolContext) {
+				// TODO
+
+			} else if (did instanceof B314Parser.ExprEntContext) {
+				// TODO
+
+			} else if (did instanceof TerminalNode) {
+				int didType = ((TerminalNode) did).getSymbol().getType();
+
+				if (didType == B314Parser.ID) {
+					// TODO
+				} else { // didType == B314Parser.LPAR
+					// TODO
+				}
 			}
 
 		}
