@@ -1,0 +1,17 @@
+/* Comments are between delimiters */
+declare and retain
+    /* Global declarations */
+    i as integer;
+    j as integer;
+    arena as square[27, 27];
+    myFct as function (w as integer,v as integer): integer declare local i as boolean; do skip return t done
+    myFct2 as function (test1 as integer,v as integer): integer declare local t as integer; do set t to v return t done
+
+when your turn
+when true
+declare local
+testVarWhen as integer;
+do skip done
+    by default declare local
+    testVarDefault as integer; do
+skip    done
