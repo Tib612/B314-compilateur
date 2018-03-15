@@ -158,6 +158,8 @@ public class Main {
         LOG.debug("Verifying input");
         B314VisitorImpl visitor = new B314VisitorImpl();
         visitor.visit(tree);
+
+        visitor.printSymbolsTable();
     }
 
 
