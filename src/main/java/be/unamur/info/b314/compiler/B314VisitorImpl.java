@@ -66,7 +66,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 
 		ParseTree type = ctx.type().getChild(0);
-        Check("0",type,id,ctx.getText());
+        CheckAndAdd("0",type,id,ctx.getText());
 
 
 		return null;
@@ -80,7 +80,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      * @param ctxText
      * @return
      */
-	private void Check(String scope,ParseTree type,String id,String ctxText){
+	private void CheckAndAdd(String scope,ParseTree type,String id,String ctxText){
         String typeStr ="";
         int dimension = 0;
         if (type instanceof B314Parser.ScalarContext) {
@@ -151,7 +151,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             }
 
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            Check(nomFct,type,nomVar,ctx.getText());
+            CheckAndAdd(nomFct,type,nomVar,ctx.getText());
 
         }
         return null;
@@ -184,7 +184,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             }
 
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            Check("when",type,nomVar,ctx.getText());
+            CheckAndAdd("when",type,nomVar,ctx.getText());
 
         }
 
@@ -223,7 +223,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             }
 
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            Check("default",type,nomVar,ctx.getText());
+            CheckAndAdd("default",type,nomVar,ctx.getText());
 
         }
 
