@@ -9,7 +9,7 @@ public class SymbolsTable {
 
     public SymbolsTable(){
         symTable = new HashMap<String,Scope>();
-        symTable.put("0",new Scope("0"));
+        symTable.put("_global",new Scope("_global"));
     }
 
 
@@ -27,7 +27,7 @@ public class SymbolsTable {
     }
 
     public void printSymbolsTable(){
-        System.out.println("\n\n la table des symboles (0 = global):");
+        System.out.println("\n\n la table des symboles:");
         for (Map.Entry<String, Scope> entry : symTable.entrySet())
         {
             System.out.println(entry.getKey());

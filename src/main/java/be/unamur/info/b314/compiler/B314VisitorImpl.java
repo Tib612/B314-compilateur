@@ -59,14 +59,14 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		String id = ctx.ID().getSymbol().getText();
 
 		// check if id existed
-		if (symTable.getScope("0").containsKey(id)) {
+		if (symTable.getScope("_global").containsKey(id)) {
 			throw new VariableAlreadyDefinedException(
 				"Error at " + ctx.getText() + ": Variable " + id + " is already defined!");
 		}
 
 
 		ParseTree type = ctx.type().getChild(0);
-        CheckAndAdd("0",type,id,ctx.getText());
+        CheckAndAdd("_global",type,id,ctx.getText());
 
 
 		return null;
@@ -134,9 +134,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         if(ctx.VOID() == null){
             String typeFct = ctx.scalar().getText();
-            symTable.getScope("0").put(nomFct, new IdInfo("fct",typeFct, 0));
+            symTable.getScope("_global").put(nomFct, new IdInfo("fct",typeFct, 0));
         }else{
-            symTable.getScope("0").put(nomFct, new IdInfo("fct","void", 0));
+            symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0));
         }
 
         symTable.createNewScope(nomFct);
@@ -242,7 +242,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		String gid = ctx.ID().getSymbol().getText();
 
 		// TODO: Determine the scope in which the expression stands.
-		if (!symTable.getScope("global").containsKey(gid)) {
+		if (!symTable.getScope("_global").containsKey(gid)) {
 			throw new ElementUndefinedException(
 				ctx + " The variable " + gid + " might not be defined!");
 		}
@@ -271,7 +271,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			// TODO: What if exprG isnot a scalar or an array element but an entire array?
 			B314Parser.ExprGContext exprG = ctx.exprG();
 			String gid = exprG.ID().getSymbol().getText();
-			IdInfo gidInfo = symTable.getScope("global").getVar(gid);
+			IdInfo gidInfo = symTable.getScope("_global").getVar(gid);
 			if (gidInfo.getDimension() > 0 && exprG.getChildCount() == 1) {
 				throw new IllegalAffectationException(ctx + " The lhs expression cannot be an array!");
 			}
@@ -282,7 +282,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			if (did instanceof B314Parser.ExprGContext) {
 
 			 	String subDid = ((B314Parser.ExprGContext)did).ID().getSymbol().getText();
-				IdInfo subDidInfo = symTable.getScope("global").getVar(subDid);
+				IdInfo subDidInfo = symTable.getScope("_global").getVar(subDid);
 
 				if (subDidInfo.getDimension() > 0 && did.getChildCount() == 1) {
 					throw new IllegalAffectationException(
