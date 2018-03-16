@@ -330,7 +330,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	/**
 	 * Visit a parse tree produced by {@link B314Parser#exprEnt}.
 	 *
-	 * @param ctx the parse tree representing the integer expression.
+	 * @param ctx the parse tree representing the expression.
+	 * @throws TypeMismatchException if the expression is not of type integer.
 	 */
 	public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
 		visitChildren(ctx);
@@ -353,4 +354,33 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 		return null;
 	}
+
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#exprBool}.
+	 *
+	 * @param ctx the parse tree representing the expression.
+	 * @throws TypeMismatchException if the expression is not of type boolean.
+	 */
+	public Void visitExprBool(B314Parser.ExprBoolContext ctx) {
+		visitChildren(ctx);
+
+		B314Parser.ExprGContext lhsExpr = ctx.exprG();
+		if (lhsExpr != null) {
+			String lhsId = lhsExpr.ID().getText();
+			IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
+			String lhsType = lhsInfo.getDataType();
+			if (!lhsType.equals("boolean")) {
+				throw new TypeMismatchException(
+					ctx.getText() + " Boolean expected but " + lhsId + " is of type " + lhsType + ".");
+			}
+
+			if (lhsExpr.exprEnt().size() != lhsInfo.getDimension()) {
+				throw new TypeMismatchException(
+					ctx.getText() + " Boolean expected but array type was found!");
+			}
+		}
+
+		return null;
+	}
+
 }

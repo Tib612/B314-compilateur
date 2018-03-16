@@ -1,0 +1,7 @@
+declare and retain
+	i as integer;
+	j as boolean;
+when your turn
+by default do
+	set j to i or true
+done
