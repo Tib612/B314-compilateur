@@ -57,14 +57,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         LOG.debug("Visit 1: VarDecl (0)");
 
 		String id = ctx.ID().getSymbol().getText();
-
-		// check if id existed
-		if (symTable.getScope("_global").containsKey(id)) {
-			throw new VariableAlreadyDefinedException(
-				"Error at " + ctx.getText() + ": Variable " + id + " is already defined!");
-		}
-
-
 		ParseTree type = ctx.type().getChild(0);
         CheckAndAdd("_global",type,id,ctx.getText());
 
@@ -80,7 +72,15 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      * @param ctxText
      * @return
      */
-	private void CheckAndAdd(String scope,ParseTree type,String id,String ctxText){
+	private void CheckAndAdd(String scope,ParseTree type,String id,String ctxText)
+			throws VariableAlreadyDefinedException, NegativeArraySizeException,ArenaDeclarationException{
+
+		// check if id existed
+		if (symTable.getScope(scope).containsKey(id)) {
+			throw new VariableAlreadyDefinedException(
+					"Error at " + ctxText+ ": Variable " + id + " is already defined!");
+		}
+
         String typeStr ="";
         int dimension = 0;
         if (type instanceof B314Parser.ScalarContext) {
@@ -112,7 +112,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
             LOG.debug("A " + dimension + "D array of type " + typeStr + " was declared and named " + id);
         }
-        symTable.getScope(scope).put(id, new IdInfo("fct",typeStr, dimension));
+        symTable.getScope(scope).put(id, new IdInfo("var",typeStr, dimension));
     }
 
 
@@ -142,13 +142,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 	    for(int i=0;i< ctx.varDecl().size();i++){
 	        String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
-
-            // check if id existed
-            if (symTable.getScope(nomFct).containsKey(nomVar)) {
-                throw new VariableAlreadyDefinedException(
-                        "Error at " + ctx.getText() + ": Variable " + nomVar + " is already defined!");
-            }
-
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
             CheckAndAdd(nomFct,type,nomVar,ctx.getText());
 
@@ -175,13 +168,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         for(int i=0;i< ctx.varDecl().size();i++){
             String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
-
-            // check if id existed
-            if (symTable.getScope("when").containsKey(nomVar)) {
-                throw new VariableAlreadyDefinedException(
-                        "Error at " + ctx.getText() + ": Variable " + nomVar + " is already defined!");
-            }
-
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
             CheckAndAdd("when",type,nomVar,ctx.getText());
 
@@ -214,13 +200,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         for(int i=0;i< ctx.varDecl().size();i++){
             String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
-
-            // check if id existed
-            if (symTable.getScope("default").containsKey(nomVar)) {
-                throw new VariableAlreadyDefinedException(
-                        "Error at " + ctx.getText() + ": Variable " + nomVar + " is already defined!");
-            }
-
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
             CheckAndAdd("default",type,nomVar,ctx.getText());
 
