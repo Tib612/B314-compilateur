@@ -266,72 +266,58 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 		if (ctx.getStart().getType() == B314Parser.SET) {
 			LOG.debug("An affect instruction found!: " + ctx.getText());
-
-			// TODO: What if exprG isnot a scalar or an array element but an entire array?
-			B314Parser.ExprGContext exprG = ctx.exprG();
-			String gid = exprG.ID().getSymbol().getText();
-			IdInfo gidInfo = symTable.getScope("_global").getVar(gid);
-			if (gidInfo.getDimension() > 0 && exprG.getChildCount() == 1) {
-				throw new IllegalAffectationException(ctx + " The lhs expression cannot be an array!");
-			}
-
-			String gidBaseType = gidInfo.getDataType();
-
-			ParseTree did = ctx.exprD().getChild(0);
-			if (did instanceof B314Parser.ExprGContext) {
-
-			 	String subDid = ((B314Parser.ExprGContext)did).ID().getSymbol().getText();
-				IdInfo subDidInfo = symTable.getScope("_global").getVar(subDid);
-
-				if (subDidInfo.getDimension() > 0 && did.getChildCount() == 1) {
-					throw new IllegalAffectationException(
-						ctx.getText() + " The rhs expression cannot be an array!");
-				}
-
-				String subDidDataType = subDidInfo.getDataType();
-				if (!gidBaseType.equals(subDidDataType)) {
-					throw new TypeMismatchException(
-						ctx.getText() + 
-						" There is a type mismatch between the two sides of the expression:" +
-						" rhs expression is of type " + gidBaseType +
-						" but lhs expression is of type " + subDidDataType
-						);
-				}
-
-			} else if (did instanceof B314Parser.ExprCaseContext) {
-				String caseType = "square";
-				// TODO A Case can be assigned to a square 
-				if (!gidBaseType.equals(caseType)) {
-					throw new TypeMismatchException(
-						ctx.getText() + 
-						" There is a type mismatch between the two sides of the expression:" +
-						" rhs expression is of type " + gidBaseType +
-						" but lhs expression is of type " + caseType
-					);
-				}
-
-			} else if (did instanceof B314Parser.ExprBoolContext) {
-				// TODO
-
-			} else if (did instanceof B314Parser.ExprEntContext) {
-				// TODO
-
-			} else if (did instanceof TerminalNode) {
-				int didType = ((TerminalNode) did).getSymbol().getType();
-
-				if (didType == B314Parser.ID) {
-					// TODO
-				} else { // didType == B314Parser.LPAR
-					// TODO
-				}
-			}
-
+			checkAffectInstruction(ctx);
 		}
 
 		return null;
 	}
 
-	private void checkAffectInstruction() {
+	private void checkAffectInstruction(B314Parser.InstructionContext ctx) {
 
+		B314Parser.ExprGContext lhsExpr = ctx.exprG();
+		String lhsId = lhsExpr.ID().getSymbol().getText();
+		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
+		if (lhsInfo.getDimension() > 0 && lhsExpr.getChildCount() == 1) {
+			throw new IllegalAffectationException(ctx + " The lhs expression cannot be array!");
+		}
+
+		String lhsType = lhsInfo.getDataType();
+
+		ParseTree rhsExpr = ctx.exprD().getChild(0);
+		String rhsType = "null";
+		if (rhsExpr instanceof B314Parser.ExprGContext) {
+
+		 	String rhsId = ((B314Parser.ExprGContext) rhsExpr).ID().getSymbol().getText();
+			IdInfo rhsInfo = symTable.getScope("_global").getVar(rhsId);
+
+			if (rhsInfo.getDimension() > 0 && rhsExpr.getChildCount() == 1) {
+				throw new IllegalAffectationException(
+					ctx.getText() + " The rhs expression cannot be array!");
+			}
+
+			rhsType = rhsInfo.getDataType();
+
+		} else if (rhsExpr instanceof B314Parser.ExprCaseContext) {
+			rhsType = "square";
+
+		} else if (rhsExpr instanceof B314Parser.ExprBoolContext) {
+			rhsType = "boolean";
+
+		} else if (rhsExpr instanceof B314Parser.ExprEntContext) {
+			rhsType = "integer";
+
+		} else if (rhsExpr instanceof TerminalNode) {
+			int symbolType = ((TerminalNode) rhsExpr).getSymbol().getType();
+
+			if (symbolType == B314Parser.ID) {
+				// TODO
+			} else { // symbolType == B314Parser.LPAR
+				// TODO
+			}
+		}
+
+		if (!lhsType.equals(rhsType)) {
+			throw new TypeMismatchException(ctx.getText(), lhsType, rhsType);
+		}
 	}
 }

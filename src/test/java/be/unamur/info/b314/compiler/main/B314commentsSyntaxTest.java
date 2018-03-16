@@ -93,12 +93,20 @@ public class B314commentsSyntaxTest {
     // par tndao
     @Test
     public void testAffectInstruction_TypeMismatchScalar_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_scalar_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between scalar variables of two sides");
+        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_bool_intG_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between scalar variables of two sides");
     }
 
     // par tndao
     @Test
-    public void testAffectInstruction_TypeMismatchArray1_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_array1_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
+    public void testAffectInstruction_TypeMismatchArrayArray_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_array_arrayG_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
     }
+
+
+    // par tndao
+    @Test
+    public void testAffectInstruction_TypeMismatchIntSquare_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_int_square_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
+    }
+    
 }

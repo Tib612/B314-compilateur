@@ -1,0 +1,9 @@
+/* Comments are between delimiters */
+declare and retain
+    /* Global declarations */
+    i as integer;
+    j as square;
+
+by default do
+    set i to player
+done

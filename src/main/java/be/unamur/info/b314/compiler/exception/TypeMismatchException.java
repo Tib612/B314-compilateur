@@ -11,4 +11,10 @@ public class TypeMismatchException extends RuntimeException {
         super(message);
     }
 
+    public TypeMismatchException(String location, String lhsType, String rhsType) {
+		super(location + 
+			" There is a type mismatch between the two sides of the expression:" +
+			" rhs expression is of type " + lhsType +
+			" but lhs expression is of type " + rhsType);
+    }
 }
