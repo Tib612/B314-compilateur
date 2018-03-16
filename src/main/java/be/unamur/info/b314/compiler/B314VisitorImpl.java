@@ -259,8 +259,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * @throws IllegalAffectationException if the lhs or rhs expression is an entire array.
 	 */
 	@Override
-	public Void visitInstruction(B314Parser.InstructionContext ctx)
-		throws TypeMismatchException, IllegalAffectationException {
+	public Void visitInstruction(B314Parser.InstructionContext ctx) {
 
 		visitChildren(ctx);
 
@@ -272,7 +271,15 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		return null;
 	}
 
-	private void checkAffectInstruction(B314Parser.InstructionContext ctx) {
+	/**
+	 * Check if the affect instruction ctx respects the constraints
+	 *
+	 * @throws TypeMismatchException if the types of the lhs expression (expression gauche)
+	 *					and rhs expression (expression droite) are different.
+	 * @throws IllegalAffectationException if the lhs or rhs expression is an entire array.
+	 */
+	private void checkAffectInstruction(B314Parser.InstructionContext ctx)
+		throws TypeMismatchException, IllegalAffectationException {
 
 		B314Parser.ExprGContext lhsExpr = ctx.exprG();
 		String lhsId = lhsExpr.ID().getSymbol().getText();
@@ -282,42 +289,56 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		}
 
 		String lhsType = lhsInfo.getDataType();
-
-		ParseTree rhsExpr = ctx.exprD().getChild(0);
-		String rhsType = "null";
-		if (rhsExpr instanceof B314Parser.ExprGContext) {
-
-		 	String rhsId = ((B314Parser.ExprGContext) rhsExpr).ID().getSymbol().getText();
-			IdInfo rhsInfo = symTable.getScope("_global").getVar(rhsId);
-
-			if (rhsInfo.getDimension() > 0 && rhsExpr.getChildCount() == 1) {
-				throw new IllegalAffectationException(
-					ctx.getText() + " The rhs expression cannot be array!");
-			}
-
-			rhsType = rhsInfo.getDataType();
-
-		} else if (rhsExpr instanceof B314Parser.ExprCaseContext) {
-			rhsType = "square";
-
-		} else if (rhsExpr instanceof B314Parser.ExprBoolContext) {
-			rhsType = "boolean";
-
-		} else if (rhsExpr instanceof B314Parser.ExprEntContext) {
-			rhsType = "integer";
-
-		} else if (rhsExpr instanceof TerminalNode) {
-			int symbolType = ((TerminalNode) rhsExpr).getSymbol().getType();
-
-			if (symbolType == B314Parser.ID) {
-				// TODO
-			} else { // symbolType == B314Parser.LPAR
-				// TODO
-			}
-		}
-
+		String rhsType = getRhsExprType(ctx.exprD());
 		if (!lhsType.equals(rhsType)) {
 			throw new TypeMismatchException(ctx.getText(), lhsType, rhsType);
 		}
+	}
+
+	/**
+	 * Get data type of an expression
+	 *
+	 * @param rhsExpr a right-hand-side expression (expression droite) 
+	 * @throws IllegalAffectationException if the lhs or rhs expression is an entire array.
+	 * @return the data type of rhsExpr
+	 */
+	private String getRhsExprType (B314Parser.ExprDContext rhsExpr) {
+		String type  = "";
+		ParseTree subExpr = rhsExpr.getChild(0);
+		if (subExpr instanceof B314Parser.ExprGContext) {
+
+		 	String rhsId = ((B314Parser.ExprGContext) subExpr).ID().getSymbol().getText();
+			IdInfo rhsInfo = symTable.getScope("_global").getVar(rhsId);
+
+			// TODO: Refactor. In affect instruction, a rhs expression can't be of array type but
+			// 		in other scenarios, it's possible...
+			if (rhsInfo.getDimension() > 0 && subExpr.getChildCount() == 1) {
+				throw new IllegalAffectationException(
+					rhsExpr.getText() + " The rhs expression cannot be of array type!");
+			}
+
+			type = rhsInfo.getDataType();
+
+		} else if (subExpr instanceof B314Parser.ExprCaseContext) {
+			type = "square";
+
+		} else if (subExpr instanceof B314Parser.ExprBoolContext) {
+			type = "boolean";
+
+		} else if (subExpr instanceof B314Parser.ExprEntContext) {
+			type = "integer";
+
+		} else if (subExpr instanceof TerminalNode) {
+			int symbolType = ((TerminalNode) subExpr).getSymbol().getType();
+
+			if (symbolType == B314Parser.ID) {
+				String rhsId = subExpr.getText();
+				type = symTable.getScope("_global").getVar(rhsId).getDataType();
+			} else { // symbolType == B314Parser.LPAR, c'est une expression parenthese
+				type = getRhsExprType(rhsExpr.exprD(0));
+			}
+		}
+
+		return type;
 	}
 }
