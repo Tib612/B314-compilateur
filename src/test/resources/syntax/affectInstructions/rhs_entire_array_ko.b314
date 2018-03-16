@@ -1,0 +1,7 @@
+declare and retain
+	j as integer[7];
+	i as integer[27][27];
+when your turn
+by default do
+	set i[0][0] to j;
+done
