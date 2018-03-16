@@ -296,8 +296,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		B314Parser.ExprGContext lhsExpr = ctx.exprG();
 		String lhsId = lhsExpr.ID().getSymbol().getText();
 		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
-		if (lhsInfo.getDimension() > 0 && lhsExpr.getChildCount() == 1) {
-			throw new IllegalAffectationException(ctx + " The lhs expression cannot be of array type!");
+		if (lhsInfo.getDimension() != lhsExpr.exprEnt().size()) {
+			throw new IllegalAffectationException(ctx.getText() + 
+				" The lhs expression cannot be of array type!");
 		}
 
 		String lhsType = lhsInfo.getDataType();
@@ -318,13 +319,13 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		String type  = "";
 		ParseTree subExpr = rhsExpr.getChild(0);
 		if (subExpr instanceof B314Parser.ExprGContext) {
-
-		 	String rhsId = ((B314Parser.ExprGContext) subExpr).ID().getSymbol().getText();
+			B314Parser.ExprGContext subExprG = (B314Parser.ExprGContext) subExpr;
+		 	String rhsId = subExprG.ID().getSymbol().getText();
 			IdInfo rhsInfo = symTable.getScope("_global").getVar(rhsId);
 
 			// TODO: Refactor. In affect instruction, a rhs expression can't be of array type but
 			// 		in other scenarios, it's possible...
-			if (rhsInfo.getDimension() > 0 && subExpr.getChildCount() == 1) {
+			if (rhsInfo.getDimension() != subExprG.exprEnt().size()) {
 				throw new IllegalAffectationException(
 					rhsExpr.getText() + " The rhs expression cannot be of array type!");
 			}

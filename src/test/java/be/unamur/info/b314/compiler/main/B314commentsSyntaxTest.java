@@ -83,35 +83,5 @@ public class B314commentsSyntaxTest {
     public void testcomments_wrong_array_size_ko() throws Exception {
         CompilerTestHelper.launchCompilation("/syntax/comments/ko/wrong_array_size_ko.b314", testFolder.newFile(), false, "comments: wrong_array_size");
     }
-
-    // par tndao
-    @Test
-    public void testLHSExpression_VariableUndefined_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/exprG/variable_undefined_ko.b314", testFolder.newFile(), false, "Left-hand-side expression: variable undefined");
-    }
-
-    // par tndao
-    @Test
-    public void testAffectInstruction_TypeMismatchScalar_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_bool_intG_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between scalar variables of two sides");
-    }
-
-    // par tndao
-    @Test
-    public void testAffectInstruction_TypeMismatchArrayArray_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_array_arrayG_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
-    }
-
-    // par tndao
-    @Test
-    public void testAffectInstruction_TypeMismatchIntSquare_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_int_square_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
-    }
-
-    // par tndao
-    @Test
-    public void testAffectInstruction_array_mismatch_dimensions_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/exprG/array_mismatch_dimensions_ko.b314", testFolder.newFile(), false, "Affect instruction: Dimension mismatch between array declaration and utilisation");
-    }
     
 }
