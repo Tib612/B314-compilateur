@@ -238,15 +238,27 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 */
 	@Override
 	public Void visitExprG(B314Parser.ExprGContext ctx) { 
-		String gid = ctx.ID().getSymbol().getText();
+		visitChildren(ctx);
 
-		// TODO: Determine the scope in which the expression stands.
-		if (!symTable.getScope("_global").containsKey(gid)) {
+		String lhsId = ctx.ID().getSymbol().getText();
+
+		// TODO in echeance2: Determine the scope in which the expression stands.
+		if (!symTable.getScope("_global").containsKey(lhsId)) {
 			throw new ElementUndefinedException(
-				ctx + " The variable " + gid + " might not be defined!");
+				ctx.getText() + " The variable " + lhsId + " might not be defined!");
 		}
 
-		// TODO: what if exprG is declared as a 2d array but referred as a 1d array or scalar?
+		// what if exprG is declared as a 1d array but referred as a 2d array?
+		// note that it's possible if we declared i as boolean[2][2] but call i[2] (get a row of i..)
+		int lhsDimension = ctx.exprEnt().size();
+		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
+		int lhsRequiredDimension = lhsInfo.getDimension();
+		if (lhsDimension > lhsRequiredDimension) {
+			throw new TypeMismatchException(ctx.getText() + 
+				"Incompatible types: " + lhsId + " was declared as a " +
+				lhsRequiredDimension + "D variable but used as a " + 
+				lhsDimension + "D variable.");
+		}
 
 		return null;
 	}
@@ -285,7 +297,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		String lhsId = lhsExpr.ID().getSymbol().getText();
 		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
 		if (lhsInfo.getDimension() > 0 && lhsExpr.getChildCount() == 1) {
-			throw new IllegalAffectationException(ctx + " The lhs expression cannot be array!");
+			throw new IllegalAffectationException(ctx + " The lhs expression cannot be of array type!");
 		}
 
 		String lhsType = lhsInfo.getDataType();

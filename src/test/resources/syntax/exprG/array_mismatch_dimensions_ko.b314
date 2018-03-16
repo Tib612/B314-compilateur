@@ -1,0 +1,7 @@
+/* Comments are between delimiters */
+declare and retain
+	i as integer[27][27];
+	j as integer[27];
+by default do
+    set i[1][1] to j[2][2];
+done

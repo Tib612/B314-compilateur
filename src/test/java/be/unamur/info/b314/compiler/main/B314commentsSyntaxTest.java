@@ -102,11 +102,16 @@ public class B314commentsSyntaxTest {
         CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_array_arrayG_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
     }
 
-
     // par tndao
     @Test
     public void testAffectInstruction_TypeMismatchIntSquare_ko() throws Exception {
         CompilerTestHelper.launchCompilation("/syntax/affectInstructions/type_mismatch_int_square_ko.b314", testFolder.newFile(), false, "Affect instruction: Type mismatch between array variables of two sides");
+    }
+
+    // par tndao
+    @Test
+    public void testAffectInstruction_array_mismatch_dimensions_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/exprG/array_mismatch_dimensions_ko.b314", testFolder.newFile(), false, "Affect instruction: Dimension mismatch between array declaration and utilisation");
     }
     
 }
