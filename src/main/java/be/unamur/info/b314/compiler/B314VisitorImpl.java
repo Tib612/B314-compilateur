@@ -45,14 +45,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * Visit a parse tree produced by {@link B314Parser#varDecl}.
 	 *
 	 * @param ctx the parse tree representing the variable declaration syntax.
-	 * @modifies symTable
-	 * @throws VariableAlreadyDefinedException if the id of the variable is occuped by another variable.
-	 * @throws NegativeArraySizeException if the variable is of type array and its size is negative.
-	 * @effects otherwise, the name and type of the variable is inserted into the table of symbols symTable.
 	 */
 	@Override
-	public Void visitVarDecl(B314Parser.VarDeclContext ctx) 
-		throws VariableAlreadyDefinedException, NegativeArraySizeException,ArenaDeclarationException {
+	public Void visitVarDecl(B314Parser.VarDeclContext ctx) {
 
         LOG.debug("Visit 1: VarDecl (0)");
 
@@ -60,20 +55,21 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		ParseTree type = ctx.type().getChild(0);
         CheckAndAdd("_global",type,id,ctx.getText());
 
-
 		return null;
 	}
 
     /**
-     *  la vérification des contraintes pour les variables (scalar, array et arena) étant le même dans plusieurs fonction, une fonction a été créée
+     *  La vérification des contraintes pour les variables (scalar, array et arena) étant le même dans plusieurs fonction, une fonction a été créée
      *
-     * @param type
-     * @param id
-     * @param ctxText
-     * @return
+     * @param type ParseTree containing information about the type of the variable
+     * @param id String containing variable name
+     * @param ctxText used in error message 
+	 * @throws VariableAlreadyDefinedException if the id of the variable is occuped by another variable.
+	 * @throws NegativeArraySizeException if the variable is of type array and its size is negative.
+	 * @throws ArenaDeclarationException if the variable is named "arena" but does not respect the criteria of arena.
+	 * @effects otherwise, the name and type of the variable is inserted into the table of symbols symTable.
      */
-	private void CheckAndAdd(String scope,ParseTree type,String id,String ctxText)
-			throws VariableAlreadyDefinedException, NegativeArraySizeException,ArenaDeclarationException{
+	private void CheckAndAdd(String scope,ParseTree type,String id,String ctxText) {
 
 		// check if id existed
 		if (symTable.getScope(scope).containsKey(id)) {
@@ -105,7 +101,10 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                         ctxText + " Array size must be positive!");
             }
 
-            if (id.equals("arena") && ( dimension != 2 || Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText()) || !typeStr.equals("square")) ){
+            if (id.equals("arena") && ( dimension != 2 
+            	|| Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText()) 
+            	|| !typeStr.equals("square")) ){
+                
                 throw new ArenaDeclarationException(
                         "Error at " + ctxText + ": Arena error!");
             }
@@ -123,7 +122,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      * @modifies symTable est modifiée
      */
     @Override
-    public Void visitFctDecl(B314Parser.FctDeclContext ctx) throws VariableAlreadyDefinedException {
+    public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
     	// TODO (apres echeance1) visit childrens
 
@@ -150,17 +149,16 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     }
 
     /**
-     *  Visit a parse tree produced by {@link B314Parser#clauseWhen}.
-     *  This implementation version assumes that all the variables are global
+     * Visit a parse tree produced by {@link B314Parser#clauseWhen}.
+     * This implementation version assumes that all the variables are global
      *
-     *  Fill the Symbol table with Variables declared in ClauseWhen
+     * Fill the Symbol table with Variables declared in ClauseWhen
      *
      * @modifies symTable est modifiée
      * @throws NegativeArraySizeException
      */
     @Override
-    public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx)
-            throws NegativeArraySizeException {
+    public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx) {
 
         LOG.debug("Visit 3: when");
 
@@ -179,17 +177,15 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     }
 
     /**
-     *  Visit a parse tree produced by {@link B314Parser#clauseDefault}.
-     *  This implementation version assumes that all the variables are global
+     * Visit a parse tree produced by {@link B314Parser#clauseDefault}.
+     * This implementation version assumes that all the variables are global
      *
-     *  Fill the Symbol table with Variables declared in ClauseDefault
+     * Fill the Symbol table with Variables declared in ClauseDefault
      *
      * @modifies symTable est modifiée
-     * @throws NegativeArraySizeException
      */
     @Override
-    public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx)
-            throws NegativeArraySizeException {
+    public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx) {
         LOG.debug("Visit 4: default");
 
         // important: we should call this at the beginning of every visit method
@@ -244,10 +240,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 	/**
 	 * Visit a parse tree produced by {@link B314Parser#instruction}.
-	 *
-	 * @throws TypeMismatchException if the types of the lhs expression (expression gauche)
-	 *					and rhs expression (expression droite) are different.
-	 * @throws IllegalAffectationException if the lhs or rhs expression is an entire array.
+	 * 
+	 * @param ctx the parse tree representing the instruction syntax.
 	 */
 	@Override
 	public Void visitInstruction(B314Parser.InstructionContext ctx) {
@@ -269,8 +263,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 *					and rhs expression (expression droite) are different.
 	 * @throws IllegalAffectationException if the lhs or rhs expression is an entire array.
 	 */
-	private void checkAffectInstruction(B314Parser.InstructionContext ctx)
-		throws TypeMismatchException, IllegalAffectationException {
+	private void checkAffectInstruction(B314Parser.InstructionContext ctx) {
 
 		B314Parser.ExprGContext lhsExpr = ctx.exprG();
 		String lhsId = lhsExpr.ID().getSymbol().getText();
