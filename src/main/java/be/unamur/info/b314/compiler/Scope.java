@@ -3,6 +3,12 @@ package be.unamur.info.b314.compiler;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * define a object to store variables with the same scope
+ *
+ * @specfield name is the name of the function (including _global, when, default) in witch the variables are declared
+ * @specfield scope is an hashmap in which the key is the name of the variable and the value contains the info about the variable stored in an IdInfo
+ */
 public class Scope {
 
     private String name;

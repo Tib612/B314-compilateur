@@ -3,6 +3,11 @@ package be.unamur.info.b314.compiler;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * this contains the function to work on the symbols Table
+ *
+ * @specfield symTable represent the
+ */
 public class SymbolsTable {
 
     private HashMap<String, Scope > symTable;
