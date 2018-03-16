@@ -94,9 +94,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         } else {
             B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
 
-            String arrTypeStr = arrType.scalar().getText();
-            int arrDims = arrType.INT().size();
-            typeStr = arrTypeStr + "_" + arrDims;
+            typeStr = arrType.scalar().getText();
+            dimension = arrType.INT().size();
 
 			// check negative array size
 			if (Integer.parseInt(arrType.INT(0).getText()) < 0 
@@ -106,12 +105,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                         ctxText + " Array size must be positive!");
             }
 
-            if (id.equals("arena") && ( arrDims != 2 || Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText()) || !arrTypeStr.equals("square")) ){
+            if (id.equals("arena") && ( dimension != 2 || Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText()) || !typeStr.equals("square")) ){
                 throw new ArenaDeclarationException(
                         "Error at " + ctxText + ": Arena error!");
             }
 
-            LOG.debug("A " + arrDims + "D array of type " + arrTypeStr + " was declared and named " + id);
+            LOG.debug("A " + dimension + "D array of type " + typeStr + " was declared and named " + id);
         }
         symTable.getScope(scope).put(id, new IdInfo("fct",typeStr, dimension));
     }
@@ -286,17 +285,31 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 				if (subDidInfo.getDimension() > 0 && did.getChildCount() == 1) {
 					throw new IllegalAffectationException(
-						ctx + " The rhs expression cannot be an array!");
+						ctx.getText() + " The rhs expression cannot be an array!");
 				}
 
-				if (!gidBaseType.equals(subDidInfo.getDataType())) {
+				String subDidDataType = subDidInfo.getDataType();
+				if (!gidBaseType.equals(subDidDataType)) {
 					throw new TypeMismatchException(
-						ctx + " There is a type mismatch between the two side of the expression");
+						ctx.getText() + 
+						" There is a type mismatch between the two sides of the expression:" +
+						" rhs expression is of type " + gidBaseType +
+						" but lhs expression is of type " + subDidDataType
+						);
 				}
 
 			} else if (did instanceof B314Parser.ExprCaseContext) {
-				// TODO A Case can be assigned to an integer variable or an element of an integer array
-				// if (gidType)
+				String caseType = "square";
+				// TODO A Case can be assigned to a square 
+				if (!gidBaseType.equals(caseType)) {
+					throw new TypeMismatchException(
+						ctx.getText() + 
+						" There is a type mismatch between the two sides of the expression:" +
+						" rhs expression is of type " + gidBaseType +
+						" but lhs expression is of type " + caseType
+					);
+				}
+
 			} else if (did instanceof B314Parser.ExprBoolContext) {
 				// TODO
 
@@ -316,5 +329,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		}
 
 		return null;
+	}
+
+	private void checkAffectInstruction() {
+
 	}
 }
