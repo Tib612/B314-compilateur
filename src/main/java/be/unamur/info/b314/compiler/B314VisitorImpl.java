@@ -331,27 +331,11 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * Visit a parse tree produced by {@link B314Parser#exprEnt}.
 	 *
 	 * @param ctx the parse tree representing the expression.
-	 * @throws TypeMismatchException if the expression is not of type integer.
 	 */
+	@Override
 	public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
 		visitChildren(ctx);
-
-		B314Parser.ExprGContext lhsExpr = ctx.exprG();
-		if (lhsExpr != null) {
-			String lhsId = lhsExpr.ID().getText();
-			IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
-			String lhsType = lhsInfo.getDataType();
-			if (!lhsType.equals("integer")) {
-				throw new TypeMismatchException(
-					ctx.getText() + " Integer expected but " + lhsId + " is of type " + lhsType + ".");
-			}
-
-			if (lhsExpr.exprEnt().size() != lhsInfo.getDimension()) {
-				throw new TypeMismatchException(
-					ctx.getText() + " Integer expected but array type was found!");
-			}
-		}
-
+		checkExprGType(ctx, "integer");
 		return null;
 	}
 
@@ -359,66 +343,52 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * Visit a parse tree produced by {@link B314Parser#exprBool}.
 	 *
 	 * @param ctx the parse tree representing the expression.
-	 * @throws TypeMismatchException if the expression is not of type boolean.
 	 */
+	@Override
 	public Void visitExprBool(B314Parser.ExprBoolContext ctx) {
 		visitChildren(ctx);
+		checkExprGType(ctx, "boolean");
+		return null;
+	}
 
-		B314Parser.ExprGContext lhsExpr = ctx.exprG();
-		if (lhsExpr != null) {
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#exprCase}.
+	 *
+	 * @param ctx the parse tree representing the Case expression.
+	 */
+	@Override
+	public Void visitExprCase(B314Parser.ExprCaseContext ctx) {
+		visitChildren(ctx);
+		checkExprGType(ctx, "square");
+		return null;
+	}
+
+	/**
+	 * Check if the variable respects the type constraint of the rhs expression (exprD)
+	 *
+	 * @param ctx the parse tree representing the expression.
+	 * @param typeName expected type.
+	 * @throws TypeMismatchException if the expression is not of type typeName.
+	 */
+	private void checkExprGType(ParseTree ctx, String typeName) {
+		ParseTree ctxChild = ctx.getChild(0);
+
+		if (ctxChild instanceof B314Parser.ExprGContext) {
+			B314Parser.ExprGContext lhsExpr = (B314Parser.ExprGContext) ctxChild;
 			String lhsId = lhsExpr.ID().getText();
 			IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
 			String lhsType = lhsInfo.getDataType();
-			if (!lhsType.equals("boolean")) {
-				throw new TypeMismatchException(
-					ctx.getText() + " Boolean expected but " + lhsId + " is of type " + lhsType + ".");
+
+			if (!lhsType.equals(typeName)) {
+				throw new TypeMismatchException(lhsId + 
+					" Type " + typeName + " expected but " + lhsId + " is of type " + lhsType + ".");
 			}
 
 			if (lhsExpr.exprEnt().size() != lhsInfo.getDimension()) {
 				throw new TypeMismatchException(
-					ctx.getText() + " Boolean expected but array type was found!");
+					lhsId + " Type " + typeName + " expected but array type was found!");
 			}
 		}
-
-		return null;
-	}
-
-	/**
-	 * Visit a parse tree produced by {@link B314Parser#exprCase}.
-	 *
-	 * @param ctx the parse tree representing the Case expression.
-	 */
-	public Void visitExprCase(B314Parser.ExprCaseContext ctx) {
-		visitChildren(ctx);
-
-		B314Parser.ExprGContext lhsExpr = ctx.exprG();
-		if (lhsExpr != null) {
-			checkExprGType(lhsExpr, "square");
-		}
-
-		return null;
-	}
-
-	/**
-	 * Visit a parse tree produced by {@link B314Parser#exprCase}.
-	 *
-	 * @param ctx the parse tree representing the Case expression.
-	 * @param typeName expected type.
-	 * @throws TypeMismatchException if the expression is not of type typeName.
-	 */
-	public void checkExprGType(B314Parser.ExprGContext lhsExpr, String typeName) {
-
-		String lhsId = lhsExpr.ID().getText();
-		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
-		String lhsType = lhsInfo.getDataType();
-		if (!lhsType.equals(typeName)) {
-			throw new TypeMismatchException(lhsId + 
-				" Type " + typeName + " expected but " + lhsId + " is of type " + lhsType + ".");
-		}
-
-		if (lhsExpr.exprEnt().size() != lhsInfo.getDimension()) {
-			throw new TypeMismatchException(
-				lhsId + " Type " + typeName + " expected but array type was found!");
-		}
+		
 	}
 }
