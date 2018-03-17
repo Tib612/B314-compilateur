@@ -58,7 +58,7 @@ public class B314commentsSyntaxTest {
     // par Thibaut
     @Test
     public void test_symbolTable() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/comments/ok/symbolTable.b314", testFolder.newFile(), true, "symbolTable");
+        CompilerTestHelper.launchCompilation("/syntax.symbolsTable/symbolTable.b314", testFolder.newFile(), true, "symbolTable");
     }
 
     // Serie comments KO
