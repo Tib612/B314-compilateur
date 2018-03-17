@@ -77,6 +77,10 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 					"Error at " + ctxText+ ": Variable " + id + " is already defined!");
 		}
 
+		if(id.equals(scope)){
+            throw new VariableAlreadyDefinedException(
+                    "Error at " + ctxText + ": this name is the same than the function the variable is declared in!");
+        }
         String typeStr ="";
         int dimension = 0;
         if (type instanceof B314Parser.ScalarContext) {
@@ -125,9 +129,16 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
     	// TODO (apres echeance1) visit childrens
-
+        String id = ctx.ID().get(0).toString();
         LOG.debug("Visit 2: FctDecl");
-        LOG.debug("function name = '" + ctx.ID().get(0) +"' output = "+ ctx.ID().get(1));
+        LOG.debug("function name = '" +id  +"' output = "+ ctx.ID().get(1));
+
+        // check if id existed
+        if (symTable.getScope("_global").containsKey(id)) {
+            throw new VariableAlreadyDefinedException(
+                    "Error at " + ctx.getText()+ ": Function " + id + " is already defined!");
+        }
+
         String nomFct = ctx.ID().get(0).toString();
 
         if(ctx.VOID() == null){
