@@ -383,4 +383,42 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		return null;
 	}
 
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#exprCase}.
+	 *
+	 * @param ctx the parse tree representing the Case expression.
+	 */
+	public Void visitExprCase(B314Parser.ExprCaseContext ctx) {
+		visitChildren(ctx);
+
+		B314Parser.ExprGContext lhsExpr = ctx.exprG();
+		if (lhsExpr != null) {
+			checkExprGType(lhsExpr, "square");
+		}
+
+		return null;
+	}
+
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#exprCase}.
+	 *
+	 * @param ctx the parse tree representing the Case expression.
+	 * @param typeName expected type.
+	 * @throws TypeMismatchException if the expression is not of type typeName.
+	 */
+	public void checkExprGType(B314Parser.ExprGContext lhsExpr, String typeName) {
+
+		String lhsId = lhsExpr.ID().getText();
+		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
+		String lhsType = lhsInfo.getDataType();
+		if (!lhsType.equals(typeName)) {
+			throw new TypeMismatchException(lhsId + 
+				" Type " + typeName + " expected but " + lhsId + " is of type " + lhsType + ".");
+		}
+
+		if (lhsExpr.exprEnt().size() != lhsInfo.getDimension()) {
+			throw new TypeMismatchException(
+				lhsId + " Type " + typeName + " expected but array type was found!");
+		}
+	}
 }

@@ -32,16 +32,41 @@ public class B314ExprDSyntaxTest {
     // Serie comments KO
     @Test
     public void testExprD_int_wrong_type_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/exprD/int_wrong_type_ko.b314", testFolder.newFile(), false, "Right-hand-side wrong type expression: int = bool + int");
+        CompilerTestHelper.launchCompilation(
+            "/syntax/exprD/int_wrong_type_ko.b314", 
+            testFolder.newFile(), 
+            false, 
+            "Right-hand-side wrong type expression: int = bool + int"
+        );
     }
 
     @Test
     public void testExprD_int_wrong_type_array_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/exprD/int_wrong_type_array_ko.b314", testFolder.newFile(), false, "Right-hand-side wrong type expression: int = array + int");
+        CompilerTestHelper.launchCompilation(
+            "/syntax/exprD/int_wrong_type_array_ko.b314", 
+            testFolder.newFile(), 
+            false, 
+            "Right-hand-side wrong type expression: int = array + int"
+        );
     }
 
     @Test
     public void testExprD_bool_wrong_type_ko() throws Exception {
-        CompilerTestHelper.launchCompilation("/syntax/exprD/bool_wrong_type_ko.b314", testFolder.newFile(), false, "Right-hand-side wrong type expression: bool = int or bool");
+        CompilerTestHelper.launchCompilation(
+            "/syntax/exprD/bool_wrong_type_ko.b314", 
+            testFolder.newFile(), 
+            false, 
+            "Right-hand-side wrong type expression: bool = int or bool"
+        );
+    }
+
+    @Test
+    public void testExprD_square_wrong_type_ko() throws Exception {
+        CompilerTestHelper.launchCompilation(
+            "/syntax/exprD/square_wrong_type_ko.b314", 
+            testFolder.newFile(), 
+            false, 
+            "Right-hand-side wrong type expression: bool = int is square"
+        );
     }
 }
