@@ -32,9 +32,9 @@ scalar : BOOLEAN | INTEGER | SQUARE ;
 array : scalar LBRA INT (COMMA INT)? RBRA;
 
 instruction: SKIPINS
-             | IF exprD THEN instruction + DONE
-             | IF exprD THEN instruction + ELSE instruction + DONE
-             | WHILE exprD DO instruction + DONE
+             | IF exprBool THEN instruction + DONE
+             | IF exprBool THEN instruction + ELSE instruction + DONE
+             | WHILE exprBool DO instruction + DONE
              | SET exprG TO exprD
              | COMPUTE exprD
              | NEXT action
