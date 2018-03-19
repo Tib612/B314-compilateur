@@ -4,7 +4,7 @@ declare and retain
     i as integer;
     j as integer;
     /*arena as square[27, 27];*/
-    myFct as function (w as integer,arena as square[42,42]): integer declare local i as boolean[10]; do skip return t done
+    myFct as function (w as integer,arena as square[42,42]): integer declare local i as boolean[10]; do skip return i done
     myFct2 as function (test1 as integer,v as integer): integer declare local t as integer; do set t to v return t done
 
 when your turn

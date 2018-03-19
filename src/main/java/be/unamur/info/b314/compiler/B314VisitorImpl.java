@@ -53,7 +53,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 		String id = ctx.ID().getSymbol().getText();
 		ParseTree type = ctx.type().getChild(0);
-        CheckAndAdd("_global",type,id,ctx.getText());
+        CheckAndAdd(type,id,ctx.getText());
 
 		return null;
 	}
@@ -69,8 +69,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * @throws ArenaDeclarationException if the variable is named "arena" but does not respect the criteria of arena.
 	 * @effects otherwise, the name and type of the variable is inserted into the table of symbols symTable.
      */
-	private void CheckAndAdd(String scope,ParseTree type,String id,String ctxText) {
+	private void CheckAndAdd(ParseTree type,String id,String ctxText) {
 
+		String scope = symTable.getCurrentScope();
 		// check if id existed
 		if (symTable.getScope(scope).containsKey(id)) {
 			throw new VariableAlreadyDefinedException(
@@ -89,7 +90,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                 throw new ArenaDeclarationException(
                         "Error at " + ctxText + ": Arena is not an array!");
             }
-            LOG.debug("A scalar variable declared: " + typeStr + " " + id);
+            LOG.debug("A scalar variable declared: " + typeStr + " " + id + " in scope: "+scope);
 
         } else {
             B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
@@ -117,7 +118,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         }
         symTable.getScope(scope).put(id, new IdInfo("var",typeStr, dimension));
     }
-
 
     /**
      * Visit a parse tree produced by {@link B314Parser#fctDecl}.
@@ -150,12 +150,16 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         symTable.createNewScope(nomFct);
 
-	    for(int i=0;i< ctx.varDecl().size();i++){
+        visitChildren(ctx);
+/*
+        for(int i=0;i< ctx.varDecl().size();i++){
 	        String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            CheckAndAdd(nomFct,type,nomVar,ctx.getText());
+            CheckAndAdd(type,nomVar,ctx.getText());
 
         }
+        */
+        symTable.setCurrentScope("_global");
         return null;
     }
 
@@ -174,14 +178,15 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         LOG.debug("Visit 3: when");
 
         symTable.createNewScope("when");
-
+        visitChildren(ctx);
+/*
         for(int i=0;i< ctx.varDecl().size();i++){
             String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            CheckAndAdd("when",type,nomVar,ctx.getText());
+            CheckAndAdd(type,nomVar,ctx.getText());
 
         }
-
+*/
         //once everything in the scope is checked and correct, we can delete it in the scope
         symTable.deleteScope("when");
         return null;
@@ -198,20 +203,20 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx) {
         LOG.debug("Visit 4: default");
+        symTable.createNewScope("default");
 
         // important: we should call this at the beginning of every visit method
         // to make sure that all subtrees are checked.
         visitChildren(ctx);
 
-        symTable.createNewScope("default");
-
+/*
         for(int i=0;i< ctx.varDecl().size();i++){
             String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
             ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            CheckAndAdd("default",type,nomVar,ctx.getText());
+            CheckAndAdd(type,nomVar,ctx.getText());
 
         }
-
+*/
         return null;
     }
 
