@@ -25,7 +25,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(B314VisitorImpl.class);
 
-	SymbolsTable symTable;
+	private SymbolsTable symTable;
 
 	/**
 	 * @effects initialize an empty symTable.
@@ -106,9 +106,13 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                         ctxText + " Array size must be positive!");
             }
 
-            if (id.equals("arena") && ( dimension != 2 
-            	|| Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText()) 
-            	|| !typeStr.equals("square")) ){
+            if (id.equals("arena")
+               &&
+               ( dimension != 2
+            	    || Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText())
+            	    || !typeStr.equals("square")
+                    || !scope.equals("_global")
+               ) ){
                 
                 throw new ArenaDeclarationException(
                         "Error at " + ctxText + ": Arena error!");
