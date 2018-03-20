@@ -133,6 +133,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
     	// TODO (apres echeance1) visit childrens
+    	// TODO (apres echeance1) visit childrens
         String id = ctx.ID().get(0).toString();
         LOG.debug("Visit 2: FctDecl");
         LOG.debug("function name = '" +id  +"' output = "+ ctx.ID().get(1));
@@ -145,12 +146,22 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         String nomFct = ctx.ID().get(0).toString();
 
+        int nbArg=0;
+        for (int i = 0; i < ctx.getChildCount() && !ctx.getChild(i).getText().equals(")"); i++) {
+            if(ctx.getChild(i) instanceof B314Parser.VarDeclContext){
+                nbArg++;
+            }
+        }
+        LOG.debug("nb arg: "+nbArg);
+
         if(ctx.VOID() == null){
             String typeFct = ctx.scalar().getText();
-            symTable.getScope("_global").put(nomFct, new IdInfo("fct",typeFct, 0));
+            symTable.getScope("_global").put(nomFct, new IdInfo("fct",typeFct, 0,nbArg));
         }else{
-            symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0));
+            symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0,nbArg));
         }
+
+
 
         symTable.createNewScope(nomFct);
 

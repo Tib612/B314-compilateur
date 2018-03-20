@@ -35,8 +35,8 @@ public class Scope {
 
         for(Map.Entry<String, IdInfo> subEntry : scope.entrySet()){
             IdInfo info = subEntry.getValue();
-            System.out.println("\t" + subEntry.getKey() + "/ [" + info.getIdType() 
-                + " , " + info.getDataType() + " , " + info.getDimension() + " ]");
+            System.out.println("\t" + subEntry.getKey() + "/ [" + info.getIdType()
+                + " , " + info.getDataType() + " , " + info.getDimension() +" , "+info.getNbArg()+ " ]");
         }
     }
 }
@@ -55,7 +55,15 @@ class IdInfo {
     String idType;
     String dataType;
     int dimension;
-    
+    int nbArg;  //int if function, 0 otherwise
+
+    public IdInfo(String idType, String dataType, int dimension,int nbArg) {
+        this.idType = idType;
+        this.dataType = dataType;
+        this.dimension = dimension;
+        this.nbArg = nbArg;
+    }
+
     public IdInfo(String idType, String dataType, int dimension) {
         this.idType = idType;
         this.dataType = dataType;
@@ -73,4 +81,6 @@ class IdInfo {
     public int getDimension() {
         return dimension;
     }
+
+    public int getNbArg(){return nbArg;}
 }
