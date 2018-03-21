@@ -27,6 +27,10 @@ public class Scope {
         scope.put(name, info);
     }
 
+    public String getName() {
+        return name;
+    }
+
     public IdInfo getVar(String id) {
         return scope.get(id);
     }
@@ -38,6 +42,17 @@ public class Scope {
             System.out.println("\t" + subEntry.getKey() + "/ [" + info.getIdType()
                 + " , " + info.getDataType() + " , " + info.getDimension() +" , "+info.getNbArg()+ " ]");
         }
+    }
+
+    public String toString() {
+        String str = "";
+        for(Map.Entry<String, IdInfo> subEntry : scope.entrySet()){
+            IdInfo info = subEntry.getValue();
+            str += "(" + subEntry.getKey() + ": " + info.getIdType() 
+                + ", " + info.getDataType() + ", " + info.getDimension() + ");";
+        }
+
+        return name + " {" + str + "}";
     }
 }
 

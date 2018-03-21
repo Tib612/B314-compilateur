@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.RuleNode;
 
 import be.unamur.info.b314.compiler.exception.*;
 // import be.unamur.info.b314.compiler.B314BaseVisitor;
@@ -71,16 +72,17 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      */
 	private void CheckAndAdd(ParseTree type,String id,String ctxText) {
 
-		String scope = symTable.getCurrentScope();
+		Scope scope = symTable.getCurrentScope();
+		String scopeName = scope.getName();
 		// check if id existed
-		if (symTable.getScope(scope).containsKey(id)) {
+		if (scope.containsKey(id)) {
 			throw new VariableAlreadyDefinedException(
 					"Error at " + ctxText+ ": Variable " + id + " is already defined!");
 		}
 
-		if(id.equals(scope)){
+		if(id.equals(scopeName)){
             throw new VariableAlreadyDefinedException(
-                    "Error at " + ctxText + ": this name is the same than the function the variable is declared in!");
+                    "Error at " + ctxText + ": this name is the same as the function the variable is declared in!");
         }
         String typeStr ="";
         int dimension = 0;
@@ -90,7 +92,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                 throw new ArenaDeclarationException(
                         "Error at " + ctxText + ": Arena is not an array!");
             }
-            LOG.debug("A scalar variable declared: " + typeStr + " " + id + " in scope: "+scope);
+
+            LOG.debug("A scalar variable declared: " + typeStr + " " + id + " in scope: "+ scopeName);
 
         } else {
             B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
@@ -111,7 +114,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                ( dimension != 2
             	    || Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText())
             	    || !typeStr.equals("square")
-                    || !scope.equals("_global")
+                    || !scopeName.equals(SymbolsTable.GLOBAL)
                ) ){
                 
                 throw new ArenaDeclarationException(
@@ -120,7 +123,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
             LOG.debug("A " + dimension + "D array of type " + typeStr + " was declared and named " + id);
         }
-        symTable.getScope(scope).put(id, new IdInfo("var",typeStr, dimension));
+        symTable.put(scopeName, id, new IdInfo("var",typeStr, dimension));
     }
 
     /**
@@ -132,14 +135,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
-    	// TODO (apres echeance1) visit childrens
-    	// TODO (apres echeance1) visit childrens
         String id = ctx.ID().get(0).toString();
         LOG.debug("Visit 2: FctDecl");
         LOG.debug("function name = '" +id  +"' output = "+ ctx.ID().get(1));
 
         // check if id existed
-        if (symTable.getScope("_global").containsKey(id)) {
+        if (symTable.getGlobalScope().containsKey(id)) {
             throw new VariableAlreadyDefinedException(
                     "Error at " + ctx.getText()+ ": Function " + id + " is already defined!");
         }
@@ -161,56 +162,27 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0,nbArg));
         }
 
+		visitChildren(ctx, nomFct);
 
-
-        symTable.createNewScope(nomFct);
-
-        visitChildren(ctx);
-/*
-        for(int i=0;i< ctx.varDecl().size();i++){
-	        String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
-            ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            CheckAndAdd(type,nomVar,ctx.getText());
-
-        }
-        */
-        symTable.setCurrentScope("_global");
         return null;
     }
 
     /**
      * Visit a parse tree produced by {@link B314Parser#clauseWhen}.
-     * This implementation version assumes that all the variables are global
-     *
      * Fill the Symbol table with Variables declared in ClauseWhen
      *
      * @modifies symTable est modifiée
-     * @throws NegativeArraySizeException
      */
     @Override
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx) {
-
         LOG.debug("Visit 3: when");
+		visitChildren(ctx, "when");
 
-        symTable.createNewScope("when");
-        visitChildren(ctx);
-/*
-        for(int i=0;i< ctx.varDecl().size();i++){
-            String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
-            ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            CheckAndAdd(type,nomVar,ctx.getText());
-
-        }
-*/
-        //once everything in the scope is checked and correct, we can delete it in the scope
-        symTable.deleteScope("when");
         return null;
     }
 
     /**
      * Visit a parse tree produced by {@link B314Parser#clauseDefault}.
-     * This implementation version assumes that all the variables are global
-     *
      * Fill the Symbol table with Variables declared in ClauseDefault
      *
      * @modifies symTable est modifiée
@@ -218,51 +190,44 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx) {
         LOG.debug("Visit 4: default");
-        symTable.createNewScope("default");
+        visitChildren(ctx, "default");
 
-        // important: we should call this at the beginning of every visit method
-        // to make sure that all subtrees are checked.
-        visitChildren(ctx);
-
-/*
-        for(int i=0;i< ctx.varDecl().size();i++){
-            String nomVar = ctx.varDecl().get(i).ID().getSymbol().getText();
-            ParseTree type = ctx.varDecl().get(i).type().getChild(0);
-            CheckAndAdd(type,nomVar,ctx.getText());
-
-        }
-*/
         return null;
+    }
+
+
+    private void visitChildren(RuleNode ctx, String scope) {
+    	symTable.createNewScope(scope);
+    	visitChildren(ctx);
+    	symTable.deleteScope(scope);
     }
 
 	/**
 	 * Visit a parse tree produced by {@link B314Parser#exprG}.
-	 * This implementation version assumes that all the variables are global
-	 * (i.e. there is no function in the program...)
 	 *
 	 * @throws ElementUndefinedException if the id of this expression was not declared.
+	 * @throws TypeMisMatchException if the array-dimension of the referred
+	 *				variable is not compatible with its declaration.
 	 */
 	@Override
 	public Void visitExprG(B314Parser.ExprGContext ctx) { 
 		visitChildren(ctx);
 
+		Scope scope = symTable.getCurrentScope();
 		String lhsId = ctx.ID().getSymbol().getText();
+		IdInfo lhsInfo = symTable.getIdInfo(lhsId);
 
-		// TODO in echeance2: Determine the scope in which the expression stands.
-		if (!symTable.getScope("_global").containsKey(lhsId)) {
+		if (lhsInfo == null) {
 			throw new ElementUndefinedException(
 				ctx.getText() + " The variable " + lhsId + " might not be defined!");
 		}
 
-		// what if exprG is declared as a 1d array but referred as a 2d array?
-		// note that it's possible if we declared i as boolean[2][2] but call i[2] (get a row of i..)
 		int lhsDimension = ctx.exprEnt().size();
-		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
-		int lhsRequiredDimension = lhsInfo.getDimension();
-		if (lhsDimension > lhsRequiredDimension) {
+		int lhsExpectedDimension = lhsInfo.getDimension();
+		if (lhsDimension > lhsExpectedDimension) {
 			throw new TypeMismatchException(ctx.getText() + 
 				"Incompatible types: " + lhsId + " was declared as a " +
-				lhsRequiredDimension + "D variable but used as a " + 
+				lhsExpectedDimension + "D variable but used as a " + 
 				lhsDimension + "D variable.");
 		}
 
@@ -295,10 +260,15 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * @throws IllegalAffectationException if the lhs or rhs expression is an entire array.
 	 */
 	private void checkAffectInstruction(B314Parser.InstructionContext ctx) {
-
 		B314Parser.ExprGContext lhsExpr = ctx.exprG();
 		String lhsId = lhsExpr.ID().getSymbol().getText();
-		IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
+
+		Scope scope = symTable.getCurrentScope();
+		if (!scope.containsKey(lhsId)) {
+			scope = symTable.getGlobalScope();
+		}
+
+		IdInfo lhsInfo = scope.getVar(lhsId);
 		if (lhsInfo.getDimension() != lhsExpr.exprEnt().size()) {
 			throw new IllegalAffectationException(ctx.getText() + 
 				" The lhs expression cannot be of array type!");
@@ -324,7 +294,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		if (subExpr instanceof B314Parser.ExprGContext) {
 			B314Parser.ExprGContext subExprG = (B314Parser.ExprGContext) subExpr;
 		 	String rhsId = subExprG.ID().getSymbol().getText();
-			IdInfo rhsInfo = symTable.getScope("_global").getVar(rhsId);
+			IdInfo rhsInfo = symTable.getIdInfo(rhsId);
 
 			// TODO: Refactor. In affect instruction, a rhs expression can't be of array type but
 			// 		in other scenarios, it's possible...
@@ -349,7 +319,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 			if (symbolType == B314Parser.ID) {
 				String rhsId = subExpr.getText();
-				type = symTable.getScope("_global").getVar(rhsId).getDataType();
+				type = symTable.getIdInfo(rhsId).getDataType();
 			} else { // symbolType == B314Parser.LPAR, c'est une expression parenthese
 				type = getRhsExprType(rhsExpr.exprD(0));
 			}
@@ -407,7 +377,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		if (ctxChild instanceof B314Parser.ExprGContext) {
 			B314Parser.ExprGContext lhsExpr = (B314Parser.ExprGContext) ctxChild;
 			String lhsId = lhsExpr.ID().getText();
-			IdInfo lhsInfo = symTable.getScope("_global").getVar(lhsId);
+			IdInfo lhsInfo = symTable.getIdInfo(lhsId);
 			String lhsType = lhsInfo.getDataType();
 
 			if (!lhsType.equals(typeName)) {
@@ -420,6 +390,5 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 					lhsId + " Type " + typeName + " expected but array type was found!");
 			}
 		}
-		
 	}
 }
