@@ -52,7 +52,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         LOG.debug("Visit 1: VarDecl (0)");
 
-		String id = ctx.ID().getSymbol().getText();
+		String id = ctx.ID().getText();
 		ParseTree type = ctx.type().getChild(0);
         CheckAndAdd(type,id,ctx.getText());
 
@@ -188,6 +188,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     }
 
 
+    /**
+     * Visit the parse tree in a particular scope
+     */
     private void visitChildren(RuleNode ctx, String scope) {
     	symTable.createNewScope(scope);
     	visitChildren(ctx);
