@@ -43,11 +43,23 @@ public class SymbolsTable {
         return symTable.get(scope);
     }
 
+    /**
+     * Create new dictionary to store identifiants in a particular scope
+     * 
+     * @param name String containing the name of the new scope
+     * @effects the current scope is the newly created scope
+     */ 
     public void createNewScope(String name){
         symTable.put(name, new Scope(name));
         currentScopeName = name;
     }
 
+    /**
+     * Delete the dictionary of a particular scope
+     * 
+     * @param name String containing the name of the scope to be delete
+     * @effects the current scope is set to global
+     */ 
     public void deleteScope(String name){
         symTable.remove(name);
         currentScopeName = GLOBAL;
@@ -74,6 +86,13 @@ public class SymbolsTable {
         this.put(GLOBAL, varName, info);
     }
 
+    /**
+     * Find information related to the given variable. If there are two variables (one global
+     * and one local) with the same id, the variable in current scope is returned.
+     *
+     * @param varName the name of the variable
+     * @return IdInfo object containing informations related to the variable
+     */
     public IdInfo getIdInfo(String varName) {
         Scope scope = getCurrentScope();
         if (!scope.containsKey(varName)) {

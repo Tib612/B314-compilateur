@@ -43,17 +43,6 @@ public class Scope {
                 + " , " + info.getDataType() + " , " + info.getDimension() +" , "+info.getNbArg()+ " ]");
         }
     }
-
-    public String toString() {
-        String str = "";
-        for(Map.Entry<String, IdInfo> subEntry : scope.entrySet()){
-            IdInfo info = subEntry.getValue();
-            str += "(" + subEntry.getKey() + ": " + info.getIdType() 
-                + ", " + info.getDataType() + ", " + info.getDimension() + ");";
-        }
-
-        return name + " {" + str + "}";
-    }
 }
 
 /**
