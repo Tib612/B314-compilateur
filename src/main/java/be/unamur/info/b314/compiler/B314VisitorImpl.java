@@ -42,7 +42,52 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         symTable.printSymbolsTable();
     }
 
-	/**
+    public Void visitProgramme(B314Parser.ProgrammeContext ctx){
+
+        for (int i = 0; i <  ctx.fctDecl().size(); i++) {
+            addFunctionToSymbolsTable(ctx.fctDecl(i));
+        }
+
+        visitChildren(ctx);
+        return null;
+    }
+
+    private Void addFunctionToSymbolsTable(B314Parser.FctDeclContext ctx){
+        String nomFct = ctx.ID().get(0).toString();
+        LOG.debug("Visit 2: FctDecl");
+        if(ctx.ID().size() == 2) {
+            LOG.debug("function name = '" + nomFct + "' output = " + ctx.ID().get(1));
+        }else{
+            LOG.debug("function name = '" + nomFct + "' output = void");
+        }
+
+        // check if id existed
+        if (symTable.getGlobalScope().containsKey(nomFct)) {
+            throw new VariableAlreadyDefinedException(
+                    "Error at " + ctx.getText()+ ": Function " + nomFct + " is already defined!");
+        }
+
+
+        int nbArg=0;
+        for (int i = 0; i < ctx.getChildCount() && !ctx.getChild(i).getText().equals(")"); i++) {
+            if(ctx.getChild(i) instanceof B314Parser.VarDeclContext){
+                nbArg++;
+            }
+        }
+        LOG.debug("nb arg: "+nbArg);
+
+        if(ctx.VOID().size() == 0){
+            String typeFct = ctx.scalar().getText();
+            symTable.getScope("_global").put(nomFct, new IdInfo("fct",typeFct, 0,nbArg));
+        }else if(ctx.VOID().size() == 2){
+            symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0,nbArg));
+        }else{
+            throw new TypeMismatchException("The return type of the function is not void");
+        }
+        return null;
+    }
+
+    /**
 	 * Visit a parse tree produced by {@link B314Parser#varDecl}.
 	 *
 	 * @param ctx the parse tree representing the variable declaration syntax.
@@ -135,32 +180,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
-        String id = ctx.ID().get(0).toString();
-        LOG.debug("Visit 2: FctDecl");
-        LOG.debug("function name = '" +id  +"' output = "+ ctx.ID().get(1));
-
-        // check if id existed
-        if (symTable.getGlobalScope().containsKey(id)) {
-            throw new VariableAlreadyDefinedException(
-                    "Error at " + ctx.getText()+ ": Function " + id + " is already defined!");
-        }
-
         String nomFct = ctx.ID().get(0).toString();
-
-        int nbArg=0;
-        for (int i = 0; i < ctx.getChildCount() && !ctx.getChild(i).getText().equals(")"); i++) {
-            if(ctx.getChild(i) instanceof B314Parser.VarDeclContext){
-                nbArg++;
-            }
-        }
-        LOG.debug("nb arg: "+nbArg);
-
-        if(ctx.VOID() == null){
-            String typeFct = ctx.scalar().getText();
-            symTable.getScope("_global").put(nomFct, new IdInfo("fct",typeFct, 0,nbArg));
-        }else{
-            symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0,nbArg));
-        }
+        LOG.debug("Visit 2: FctDecl");
 
 		visitChildren(ctx, nomFct);
 
@@ -209,7 +230,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 * Visit a parse tree produced by {@link B314Parser#exprG}.
 	 *
 	 * @throws ElementUndefinedException if the id of this expression was not declared.
-	 * @throws TypeMisMatchException if the array-dimension of the referred
+	 * @throws TypeMismatchException if the array-dimension of the referred
 	 *				variable is not compatible with its declaration.
 	 */
 	@Override
@@ -323,11 +344,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			if (symbolType == B314Parser.ID) {
 				String rhsId = subExpr.getText();
 				type = symTable.getIdInfo(rhsId).getDataType();
+
 			} else { // symbolType == B314Parser.LPAR, c'est une expression parenthese
 				type = getRhsExprType(rhsExpr.exprD(0));
 			}
 		}
-
+        LOG.debug("le type de l'RHS est: "+type);
 		return type;
 	}
 

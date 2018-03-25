@@ -40,8 +40,8 @@ instruction: SKIPINS
              | NEXT action
              ;
 exprD:  exprG
-       | exprCase
        | ID LPAR (exprD (COMMA exprD)*)? RPAR
+       | exprCase
        | LPAR exprD RPAR
        | exprBool
        | exprEnt
