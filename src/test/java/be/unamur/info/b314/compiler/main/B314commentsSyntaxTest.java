@@ -83,5 +83,16 @@ public class B314commentsSyntaxTest {
     public void testcomments_wrong_array_size_ko() throws Exception {
         CompilerTestHelper.launchCompilation("/syntax/comments/ko/wrong_array_size_ko.b314", testFolder.newFile(), false, "comments: wrong_array_size");
     }
-    
+
+    //ajouté par Thibaut
+    @Test
+    public void test_if_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax.if_while/if.b314", testFolder.newFile(), false, "comments: wrong_if");
+    }
+
+    //ajouté par Thibaut
+    @Test
+    public void test_while_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax.if_while/while.b314", testFolder.newFile(), false, "comments: wrong_while");
+    }
 }

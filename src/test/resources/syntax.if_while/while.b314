@@ -1,0 +1,14 @@
+/* Comments are between delimiters */
+declare and retain
+    /* Global declarations */
+    i as integer;
+    myFct as function (): integer declare local i as boolean[10]; do skip return i done
+
+
+when your turn
+when true
+do skip done
+    by default
+    do
+        while i do skip done
+    done
