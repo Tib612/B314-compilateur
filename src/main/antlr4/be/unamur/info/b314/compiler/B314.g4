@@ -22,7 +22,7 @@ varDecl: ID AS type
          ;
 fctDecl: ID AS FUNCTION LPAR (varDecl (COMMA varDecl)*)? RPAR COLON (scalar | VOID)
          (DECLARE LOCAL (varDecl SEMICOLON)+) ?
-         DO (instruction)+ RETURN ID DONE
+         DO (instruction)+ RETURN (ID | VOID) DONE
          ;
 
 type: scalar | array ;
