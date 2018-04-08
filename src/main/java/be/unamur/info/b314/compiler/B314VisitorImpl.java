@@ -185,6 +185,25 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 		visitChildren(ctx, nomFct);
 
+        //verifier que ID est du même type que le type de retour de a fonction et un scalar
+        if(ctx.VOID().size() == 0){
+            String typeFct = ctx.scalar().getText();
+            String returnType = symTable.getIdInfo(ctx.ID(1).getText()).getDataType();
+            int returnTypeDim = symTable.getIdInfo(ctx.ID(1).getText()).getDimension();
+            if( !typeFct.equals(returnType) || returnTypeDim!=0){
+                throw new TypeMismatchException("The variable returned by the function is not of the same type as the return type of the function");
+            }
+        }
+
+        //verifier que les arguments ne sont pas des listes
+        for (int i=0;i<symTable.getIdInfo(nomFct).getNbArg();i++) {
+            B314Parser.VarDeclContext x = ctx.varDecl(i);
+
+            if(symTable.getIdInfo(x.ID().getText()).getDimension() != 0)
+                throw new TypeMismatchException("The arguments of the function are arrays: "+x.ID().getText());
+
+        }
+
         return null;
     }
 
@@ -223,7 +242,10 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     private void visitChildren(RuleNode ctx, String scope) {
     	symTable.createNewScope(scope);
     	visitChildren(ctx);
-    	symTable.deleteScope(scope);
+    	//don't delete the scope for the functions, it is required to check their return type
+    	if(scope.equals("when")||scope.equals("default")) {
+            symTable.deleteScope(scope);
+        }
     }
 
 	/**
