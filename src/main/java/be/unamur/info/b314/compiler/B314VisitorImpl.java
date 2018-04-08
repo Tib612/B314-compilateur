@@ -1,18 +1,12 @@
 package be.unamur.info.b314.compiler;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.RuleNode;
-
 import be.unamur.info.b314.compiler.exception.*;
-// import be.unamur.info.b314.compiler.B314BaseVisitor;
 
 
 /**
@@ -48,9 +42,38 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             addFunctionToSymbolsTable(ctx.fctDecl(i));
         }
 
-        visitChildren(ctx);
+
+        /*nous devons récuperer toutes les var avant d'init les fonctions => nous
+         utilisons une fonction visit children qui visite les déclarations de
+         variables avant les déclarations de foncitons
+         */
+        visitChildrenVarDeclFirst(ctx);
         return null;
     }
+
+    /**
+     * Idem visitChildren, mais commence par visiter les varDecl avant tout !!
+     *
+     * @param node
+     */
+    public void visitChildrenVarDeclFirst(RuleNode node) {
+        int n = node.getChildCount();
+
+        for(int i = 0; i < n ; ++i) {
+            if( node.getChild(i) instanceof B314Parser.VarDeclContext ) {
+                ParseTree c = node.getChild(i);
+                c.accept(this);
+            }
+        }
+        for(int i = 0; i < n ; ++i) {
+            if( ! (node.getChild(i) instanceof B314Parser.VarDeclContext)) {
+                ParseTree c = node.getChild(i);
+                c.accept(this);
+            }
+        }
+
+    }
+
 
     private Void addFunctionToSymbolsTable(B314Parser.FctDeclContext ctx){
         String nomFct = ctx.ID().get(0).toString();
@@ -198,7 +221,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         //verifier que les arguments ne sont pas des listes
         for (int i=0;i<symTable.getIdInfo(nomFct).getNbArg();i++) {
             B314Parser.VarDeclContext x = ctx.varDecl(i);
-
             if(symTable.getIdInfo(x.ID().getText()).getDimension() != 0)
                 throw new TypeMismatchException("The arguments of the function are arrays: "+x.ID().getText());
 
