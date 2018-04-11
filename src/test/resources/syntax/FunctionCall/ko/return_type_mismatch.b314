@@ -1,0 +1,13 @@
+declare and retain 
+
+	sum as function (a as integer, b as integer): boolean
+		declare local result as integer;
+		do
+			set result to a + b
+			return result
+		done
+
+when your turn 
+by default do 
+	compute sum(4, 2)
+done

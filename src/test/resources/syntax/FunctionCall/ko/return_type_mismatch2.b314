@@ -1,0 +1,11 @@
+declare and retain 
+
+	sum as function (a as integer, b as integer): integer
+		do
+			return void
+		done
+
+when your turn 
+by default do 
+	compute sum(4, 2)
+done
