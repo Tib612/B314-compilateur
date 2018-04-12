@@ -151,7 +151,9 @@ public class Main {
     private void compile() throws IOException, ParsingException {
         // Get abstract syntax tree
         LOG.debug("Parsing input");
-        B314Parser.ProgrammeContext tree = parse(new ANTLRInputStream(new FileInputStream(inputFile)));
+        ANTLRInputStream a = new ANTLRInputStream(new FileInputStream(inputFile));
+        LOG.debug("le fichier de test est:\n"+a.toString());
+        B314Parser.ProgrammeContext tree = parse(a);
         LOG.debug("Parsing input: done");
         LOG.debug("AST is {}", tree.toStringTree(parser));
 
