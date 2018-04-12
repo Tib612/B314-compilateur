@@ -78,7 +78,7 @@ SKIPINS: 'skip';
 // Types
 BOOLEAN: 'boolean';
 INTEGER: 'integer';
-INT: (MINUS)? [1-9](DIGIT)*| '0' ;
+INT: [1-9](DIGIT)*| '0' ;
 TRUE: 'true';
 FALSE: 'false';
 VOID: 'void';

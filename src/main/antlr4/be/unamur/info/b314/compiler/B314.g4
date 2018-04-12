@@ -59,7 +59,7 @@ exprBool:
        | exprG // pour couvrir tous les formes d'une expression droite
        ;
 exprEnt:
-        INT
+        (MINUS)? INT
        | LATITUDE | LONGITUDE | GRID SIZE
        | (MAP | RADIO | AMMO | FRUITS | SODA) COUNT
        | LIFE
