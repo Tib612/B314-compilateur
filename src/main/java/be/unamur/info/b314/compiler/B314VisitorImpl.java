@@ -75,12 +75,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 
     private Void addFunctionToSymbolsTable(B314Parser.FctDeclContext ctx){
-        String nomFct = ctx.ID().get(0).toString();
+        String nomFct = ctx.ID().toString();
         LOG.debug("Visit 2: FctDecl");
-        if(ctx.ID().size() == 2) {
-            LOG.debug("function name = '" + nomFct + "' output = " + ctx.ID().get(1));
-        }else{
+        if(ctx.VOID().size() == 2) {
             LOG.debug("function name = '" + nomFct + "' output = void");
+        }else{
+            LOG.debug("function name = '" + nomFct + "' output = "+ ctx.scalar().getText());
         }
 
         // check if id existed
@@ -203,17 +203,16 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
-        String nomFct = ctx.ID().get(0).toString();
+        String nomFct = ctx.ID().toString();
         LOG.debug("Visit 2: FctDecl");
 
 		visitChildren(ctx, nomFct);
 
-        //verifier que ID est du même type que le type de retour de a fonction et un scalar
+        //verifier que le type retourné est du même type que le type de retour de la fonction
         if(ctx.VOID().size() == 0){
             String typeFct = ctx.scalar().getText();
-            String returnType = symTable.getIdInfo(ctx.ID(1).getText()).getDataType();
-            int returnTypeDim = symTable.getIdInfo(ctx.ID(1).getText()).getDimension();
-            if( !typeFct.equals(returnType) || returnTypeDim!=0){
+            String returnType = getRhsExprType(ctx.exprD());
+            if( !typeFct.equals(returnType)){
                 symTable.printSymbolsTable();
                 throw new TypeMismatchException("The variable returned by the function is not of the same type as the return type of the function: function type is "+typeFct+" returntype is "+returnType);
             }
