@@ -9,17 +9,15 @@ public class TypeMismatchException extends RuntimeException {
         super(message, e);
     }
     
-    public TypeMismatchException(SymbolsTable symTable,String message){
+    public TypeMismatchException(String message){
         super(message);
-        symTable.printSymbolsTable();
     }
 
-    public TypeMismatchException(SymbolsTable symTable,String location, String lhsType, String rhsType) {
+    public TypeMismatchException(String location, String lhsType, String rhsType) {
 
 		super(location + 
 			" There is a type mismatch between the two sides of the expression:" +
 			" rhs expression is of type " + lhsType +
 			" but lhs expression is of type " + rhsType);
-        symTable.printSymbolsTable();
     }
 }

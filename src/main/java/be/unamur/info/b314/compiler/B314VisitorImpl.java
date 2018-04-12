@@ -104,7 +104,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         }else if(ctx.VOID().size() == 2){
             symTable.getScope("_global").put(nomFct, new IdInfo("fct","void", 0,nbArg));
         }else{
-            throw new TypeMismatchException(symTable,"The return type of the function is not void");
+            symTable.printSymbolsTable();
+            throw new TypeMismatchException("The return type of the function is not void");
         }
         return null;
     }
@@ -213,16 +214,18 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             String returnType = symTable.getIdInfo(ctx.ID(1).getText()).getDataType();
             int returnTypeDim = symTable.getIdInfo(ctx.ID(1).getText()).getDimension();
             if( !typeFct.equals(returnType) || returnTypeDim!=0){
-                throw new TypeMismatchException(symTable,"The variable returned by the function is not of the same type as the return type of the function: function type is "+typeFct+" returntype is "+returnType);
+                symTable.printSymbolsTable();
+                throw new TypeMismatchException("The variable returned by the function is not of the same type as the return type of the function: function type is "+typeFct+" returntype is "+returnType);
             }
         }
 
         //verifier que les arguments ne sont pas des listes
         for (int i=0;i<symTable.getIdInfo(nomFct).getNbArg();i++) {
             B314Parser.VarDeclContext x = ctx.varDecl(i);
-            if(symTable.getIdInfo(x.ID().getText()).getDimension() != 0)
-                throw new TypeMismatchException(symTable,"The arguments of the function are arrays: "+x.ID().getText());
-
+            if(symTable.getIdInfo(x.ID().getText()).getDimension() != 0) {
+                symTable.printSymbolsTable();
+                throw new TypeMismatchException("The arguments of the function are arrays: " + x.ID().getText());
+            }
         }
 
         return null;
@@ -292,7 +295,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		int lhsDimension = ctx.exprEnt().size();
 		int lhsExpectedDimension = lhsInfo.getDimension();
 		if (lhsDimension > lhsExpectedDimension) {
-			throw new TypeMismatchException(symTable,ctx.getText() +
+            symTable.printSymbolsTable();
+            throw new TypeMismatchException(ctx.getText() +
 				"Incompatible types: " + lhsId + " was declared as a " +
 				lhsExpectedDimension + "D variable but used as a " + 
 				lhsDimension + "D variable.");
@@ -344,7 +348,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 		String lhsType = lhsInfo.getDataType();
 		String rhsType = getRhsExprType(ctx.exprD());
 		if (!lhsType.equals(rhsType)) {
-			throw new TypeMismatchException(symTable,ctx.getText(), lhsType, rhsType);
+            symTable.printSymbolsTable();
+            throw new TypeMismatchException(ctx.getText(), lhsType, rhsType);
 		}
 	}
 
@@ -449,12 +454,14 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 			String lhsType = lhsInfo.getDataType();
 
 			if (!lhsType.equals(typeName)) {
-				throw new TypeMismatchException(symTable,lhsId +
+                symTable.printSymbolsTable();
+                throw new TypeMismatchException(lhsId +
 					" Type " + typeName + " expected but " + lhsId + " is of type " + lhsType + ".");
 			}
 
 			if (lhsExpr.exprEnt().size() != lhsInfo.getDimension()) {
-				throw new TypeMismatchException(symTable,
+			    symTable.printSymbolsTable();
+				throw new TypeMismatchException(
 					lhsId + " Type " + typeName + " expected but array type was found!");
 			}
 		}
