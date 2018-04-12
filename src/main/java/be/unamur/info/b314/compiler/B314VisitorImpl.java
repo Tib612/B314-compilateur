@@ -446,7 +446,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	private void checkExprGType(ParseTree ctx, String typeName) {
 		ParseTree ctxChild = ctx.getChild(0);
 
-		if (ctxChild instanceof B314Parser.ExprGContext) {
+		if (ctxChild instanceof B314Parser.ExprGContext && ctx.getChildCount() == 1) {
 			B314Parser.ExprGContext lhsExpr = (B314Parser.ExprGContext) ctxChild;
 			String lhsId = lhsExpr.ID().getText();
 			IdInfo lhsInfo = symTable.getIdInfo(lhsId);
@@ -463,6 +463,34 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 				throw new TypeMismatchException(
 					lhsId + " Type " + typeName + " expected but array type was found!");
 			}
-		}
+		}else if(ctxChild instanceof B314Parser.ExprGContext){
+
+            B314Parser.ExprGContext lhsExpr = (B314Parser.ExprGContext) ctx.getChild(0);
+            String lhsId = lhsExpr.ID().getText();
+            IdInfo lhsInfo = symTable.getIdInfo(lhsId);
+            String lhsType = lhsInfo.getDataType();
+            int lhsDim = lhsInfo.getDimension();
+
+            B314Parser.ExprGContext lhsExpr2 = (B314Parser.ExprGContext) ctx.getChild(2);
+            String lhsId2 = lhsExpr2.ID().getText();
+            IdInfo lhsInfo2 = symTable.getIdInfo(lhsId2);
+            String lhsType2 = lhsInfo2.getDataType();
+            int lhsDim2 = lhsInfo2.getDimension();
+
+            LOG.debug(lhsId +
+                    " Type " + lhsType+lhsDim + " is compared to " + lhsId2 + " Type " + lhsType2+lhsDim2 + ".");
+
+            if (!lhsType.equals(lhsType2)) {
+                symTable.printSymbolsTable();
+                throw new TypeMismatchException(lhsId +
+                        " Type " + lhsType + " can't be compared to " + lhsId2 + " Type " + lhsType2 + ".");
+            }
+
+            if (lhsDim-lhsExpr.exprEnt().size() != lhsDim2-lhsExpr2.exprEnt().size()) {
+                symTable.printSymbolsTable();
+                throw new TypeMismatchException(
+                        " Type " + lhsType+lhsInfo.getDimension() + " can't be compared to " + lhsId2 + " Type " + lhsType2+lhsInfo2.getDimension() + ".");
+            }
+        }
 	}
 }

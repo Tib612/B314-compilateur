@@ -46,6 +46,7 @@ exprD:  exprG
        | exprBool
        | exprEnt
        ;
+       /*
 exprBool:
         TRUE | FALSE
        | (ENNEMI|GRAAL) IS ( NORTH | SOUTH | EAST | WEST)
@@ -58,6 +59,21 @@ exprBool:
        | LPAR exprBool RPAR // pour couvrir tous les formes d'une expression droite
        | exprG // pour couvrir tous les formes d'une expression droite
        ;
+*/
+exprBool:
+        TRUE | FALSE
+       | (ENNEMI|GRAAL) IS ( NORTH | SOUTH | EAST | WEST)
+//       | exprBool (AND | OR | SMALLER | BIGGER | EQUAL) exprBool
+       | NOT exprBool
+       | ID LPAR (exprD (COMMA exprD)*)? RPAR // une fonction retournant un boolean
+       | LPAR exprBool RPAR // pour couvrir tous les formes d'une expression droite
+       | exprG EQUAL exprG
+       | exprCase EQUAL exprCase // ref 5.2.1 point 5 (l'expr est bien typee si les operands sont tous les deux de type de case)
+       | exprEnt (SMALLER | BIGGER | EQUAL) exprEnt // ref 5.2.1 point 4 & 5
+       | exprBool (AND | OR |EQUAL ) exprBool // ref 5.2.1 Verification des types, point 2 (and, or) & 5 (equal)
+       | exprG // pour couvrir tous les formes d'une expression droite
+       ;
+
 exprEnt:
         (MINUS)? INT
        | LATITUDE | LONGITUDE | GRID SIZE

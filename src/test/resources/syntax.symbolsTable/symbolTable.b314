@@ -4,7 +4,7 @@ declare and retain
     j as integer;
     arena as square[27, 27];
     myFct as function (w as integer,yolo as square): void declare local i as boolean[10]; do set j to 1 return void done
-    myFct2 as function (test1 as integer,v as integer): integer declare local t as integer; do set t to v return t done
+    myFct2 as function (test1 as integer,v as integer): boolean declare local t as integer;xxx as integer[5]; do set t to v return t=xxx[1] done
     i as integer;
 
 when your turn
