@@ -1,0 +1,10 @@
+declare and retain 
+
+when your turn 
+	when 20 do
+		next use soda
+	done
+
+by default do 
+	skip
+done

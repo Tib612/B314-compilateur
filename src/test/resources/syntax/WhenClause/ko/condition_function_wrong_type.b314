@@ -1,0 +1,15 @@
+declare and retain 
+	sum as function (a as integer, b as integer): integer
+		declare local result as integer;
+		do
+			set result to a + b
+			return result
+		done
+when your turn 
+	when sum(4, 5) do
+		next use soda
+	done
+
+by default do 
+	skip
+done

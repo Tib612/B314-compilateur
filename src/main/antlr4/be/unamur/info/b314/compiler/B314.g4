@@ -101,7 +101,7 @@ action: MOVE ( NORTH | SOUTH | EAST | WEST)
 
 impDecl: IMPORT FILEDECL ;
 
-clauseWhen: WHEN exprD
+clauseWhen: WHEN exprBool
             (DECLARE LOCAL (varDecl SEMICOLON)+)?
             DO (instruction)+ DONE
             ;

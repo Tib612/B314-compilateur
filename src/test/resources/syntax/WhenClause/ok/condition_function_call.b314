@@ -1,0 +1,18 @@
+declare and retain 
+
+	isThree as function (a as integer): boolean
+		declare local result as boolean;
+		do
+			set result to a = 3
+			return result
+		done
+
+when your turn 	
+
+	when sum(3, 4) < 8 do
+		next use soda
+	done
+
+	by default do 
+		skip
+	done
