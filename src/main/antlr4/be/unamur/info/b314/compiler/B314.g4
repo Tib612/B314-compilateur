@@ -12,6 +12,7 @@ programme: DECLARE AND RETAIN
                 ( clauseWhen )*
             ))
             clauseDefault
+            EOF
             ;
 
 clauseDefault: BY DEFAULT

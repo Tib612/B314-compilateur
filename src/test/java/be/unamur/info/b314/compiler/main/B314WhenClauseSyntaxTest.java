@@ -51,5 +51,10 @@ public class B314WhenClauseSyntaxTest {
     public void testWhenClause_condition_function_wrong_type_ko() throws Exception {
         CompilerTestHelper.launchCompilation("/syntax/WhenClause/ko/condition_function_wrong_type.b314", testFolder.newFile(), false, "WhenClause: condition_function_wrong_type");
     }
+    
+    @Test
+    public void testWhenClause_multiple_default_clauses_ko() throws Exception {
+        CompilerTestHelper.launchCompilation("/syntax/WhenClause/ko/multiple_default_clauses.b314", testFolder.newFile(), false, "WhenClause: multiple_default_clauses");
+    }
 
 }
