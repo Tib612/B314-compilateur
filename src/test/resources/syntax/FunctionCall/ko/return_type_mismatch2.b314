@@ -1,11 +1,15 @@
 declare and retain 
+	ex as integer;
 
-	sum as function (a as integer, b as integer): integer
+	/* check if a number equals 3 */
+	isThree as function (a as integer): boolean
+		declare local result as boolean;
 		do
-			return void
+			set result to a = 3
+			return result
 		done
 
 when your turn 
 by default do 
-	compute sum(4, 2)
+	set x to 4 + isThree(6)
 done
