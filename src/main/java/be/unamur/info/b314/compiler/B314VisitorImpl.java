@@ -279,7 +279,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 	 *				variable is not compatible with its declaration.
 	 */
 	@Override
-	public Void visitExprG(B314Parser.ExprGContext ctx) { 
+	public Void visitExprG(B314Parser.ExprGContext ctx) {
 		visitChildren(ctx);
 
 		Scope scope = symTable.getCurrentScope();
@@ -303,6 +303,31 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
 		return null;
 	}
+
+
+	/**
+	 * Visit a parse tree produced by {@link B314Parser#exprD}.
+	 *
+	 * @throws ElementUndefinedException if the id of this function was not declared.
+	 */
+	@Override
+	public Void visitExprD(B314Parser.ExprDContext ctx) {
+
+		visitChildren(ctx);
+
+        if(ctx.ID() != null){
+			String functionName = ctx.start.getText();
+			if (symTable.getIdInfo(functionName) == null) {
+				throw new ElementUndefinedException(
+						ctx.getText() + " The function " + functionName + " might not be defined!");
+			}
+		}
+		return null;
+	}
+
+
+
+
 
 	/**
 	 * Visit a parse tree produced by {@link B314Parser#instruction}.
