@@ -1,0 +1,7 @@
+ssp 1
+; Start instructions
+lda i 0 0
+ldc i 4
+sto i
+; End instructions
+stp
