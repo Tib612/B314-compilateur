@@ -3,5 +3,5 @@ declare and retain
 	j as boolean;
 when your turn
 by default do
-	set j to i or true
+	compute i or true
 done

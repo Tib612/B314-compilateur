@@ -3,7 +3,9 @@ package be.unamur.info.b314.compiler.main;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
@@ -24,6 +26,9 @@ import be.unamur.info.b314.compiler.B314Parser;
 import be.unamur.info.b314.compiler.B314Lexer;
 import be.unamur.info.b314.compiler.exception.ParsingException;
 import be.unamur.info.b314.compiler.B314VisitorImpl;
+import be.unamur.info.b314.compiler.SymTableFiller;
+import be.unamur.info.b314.compiler.PCodePrinter;
+import be.unamur.info.b314.compiler.PCodeVisitor;
 
 /**
  *
@@ -152,16 +157,25 @@ public class Main {
         // Get abstract syntax tree
         LOG.debug("Parsing input");
         ANTLRInputStream a = new ANTLRInputStream(new FileInputStream(inputFile));
-        LOG.debug("le fichier de test est:\n"+a.toString());
+        // LOG.debug("le fichier de test est:\n"+a.toString());
         B314Parser.ProgrammeContext tree = parse(a);
-        LOG.debug("Parsing input: done");
-        LOG.debug("AST is {}", tree.toStringTree(parser));
+        // LOG.debug("Parsing input: done");
+        // LOG.debug("AST is {}", tree.toStringTree(parser));
 
-        LOG.debug("Verifying input");
+        // LOG.debug("Verifying input");
         B314VisitorImpl visitor = new B314VisitorImpl();
         visitor.visit(tree);
 
-        visitor.printSymbolsTable();
+        // visitor.printSymbolsTable();
+
+        // Build symbol table
+        LOG.debug("Building symbol table");
+        Map<String, Integer> symTable = fillSymTable(tree);
+        LOG.debug("Building symbol table: done");
+        // Print PCode
+        LOG.debug("Printing PCode");
+        printPCode(tree, symTable);
+        LOG.debug("Printing PCode: done"); 
     }
 
 
@@ -191,5 +205,27 @@ public class Main {
         return tree;
     }
 
+    /**
+     * Builds symbol table from AST.
+     */
+    private Map<String, Integer> fillSymTable(B314Parser.ProgrammeContext tree) {
+        SymTableFiller filler = new SymTableFiller();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(filler, tree);
+        return filler.getSymTable();
+    }
 
+
+    /**
+     * Print PCode from AST and symtable.
+     */
+    private void printPCode(B314Parser.ProgrammeContext tree, Map<String, Integer> symTable) 
+        throws FileNotFoundException {
+
+        PCodePrinter printer = new PCodePrinter(outputFile);
+        PCodeVisitor visitor = new PCodeVisitor(symTable, printer);
+        tree.accept(visitor);
+        printer.flush();
+        printer.close();
+    }
 }
