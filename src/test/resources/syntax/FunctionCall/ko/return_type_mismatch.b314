@@ -9,5 +9,5 @@ declare and retain
 
 when your turn 
 by default do 
-	compute sum(4, 2)
+	compute sum(true, 2)
 done

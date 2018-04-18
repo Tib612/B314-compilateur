@@ -1,5 +1,5 @@
 declare and retain 
-	ex as integer;
+	x as integer;
 
 	/* check if a number equals 3 */
 	isThree as function (a as integer): boolean
