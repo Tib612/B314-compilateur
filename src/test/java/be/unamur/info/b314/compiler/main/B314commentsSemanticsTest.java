@@ -31,9 +31,8 @@ public class B314commentsSemanticsTest {
 
     @Test
     public void testcomments_empty() throws Exception{
-        // File pcodeFile = testFolder.newFile();
-        // CompilerTestHelper.launchCompilation("/semantics/comments/empty.b314", pcodeFile, true, "comments: empty");
-        File pcodeFile = new File("/home/hg/Projects/UNamur/M0/Compilers/1718_INFOB314_COMPILATEUR_GROUPE12/src/test/resources/semantics/test");
+        File pcodeFile = testFolder.newFile();
+        CompilerTestHelper.launchCompilation("/semantics/comments/empty.b314", pcodeFile, true, "comments: empty");
         LOG.debug("PCode is: {{}", FileUtils.readFileToString(pcodeFile));
 
         InterpreterResult result;
