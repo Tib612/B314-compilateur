@@ -392,7 +392,8 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
     private void CheckFunctionArgsType(B314Parser.ExprDContext ctx, ArrayList<String> argsTypes) {
 
-        LOG.debug("WTF" + argsTypes.get(1));
+
+        LOG.debug("WTF" + argsTypes.get(0));
         int i = 0;
         for (int j = 0; j < ctx.getChildCount() && !ctx.getChild(j).getText().equals(")"); j++) {
 
