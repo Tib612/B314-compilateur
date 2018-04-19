@@ -34,6 +34,11 @@ public class B314FunctionCallSyntaxTest {
         CompilerTestHelper.launchCompilation("/syntax/FunctionCall/ok/sum.b314", testFolder.newFile(), true, "FunctionCall: sum");
     }
 
+    @Test
+    public void testFunctionCall_factorial_ok() throws Exception{
+        CompilerTestHelper.launchCompilation("/syntax/FunctionCall/ok/factorial.b314", testFolder.newFile(), true, "FunctionCall: factorial");
+    }
+
     //
     // Serie FunctionCall KO
     //

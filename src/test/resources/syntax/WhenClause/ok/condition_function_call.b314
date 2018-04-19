@@ -1,11 +1,11 @@
 declare and retain 
 
-	isThree as function (a as integer): boolean
-		declare local result as boolean;
-		do
-			set result to a = 3
-			return result
-		done
+	sum as function (a as integer, b as integer): integer
+	declare local result as integer;
+	do
+		set result to a + b
+		return result
+	done
 
 when your turn 	
 

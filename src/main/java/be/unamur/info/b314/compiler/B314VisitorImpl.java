@@ -252,13 +252,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         LOG.debug("Visit 3: when");
         visitChildren(ctx, "when");
 
-
-        if (ctx.exprBool().ID() != null) {
-            // Check if the function return type is a boolean
-            String functionName = ctx.exprBool().ID().getText();
-            CheckFunctionReturnType(functionName, "boolean");
-        }
-
         return null;
     }
 
@@ -539,6 +532,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
         visitChildren(ctx);
         checkExprGType(ctx, "integer");
+        if (ctx.ID() != null) {
+            // Check if the function return type is a boolean
+            String functionName = ctx.ID().getText();
+            CheckFunctionReturnType(functionName, "integer");
+        }
+        
         return null;
     }
 
@@ -551,6 +550,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitExprBool(B314Parser.ExprBoolContext ctx) {
         visitChildren(ctx);
         checkExprGType(ctx, "boolean");
+        if (ctx.ID() != null) {
+            // Check if the function return type is a boolean
+            String functionName = ctx.ID().getText();
+            CheckFunctionReturnType(functionName, "boolean");
+        }
+
         return null;
     }
 
@@ -563,6 +568,12 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitExprCase(B314Parser.ExprCaseContext ctx) {
         visitChildren(ctx);
         checkExprGType(ctx, "square");
+
+        if (ctx.ID() != null) {
+            // Check if the function return type is a boolean
+            String functionName = ctx.ID().getText();
+            CheckFunctionReturnType(functionName, "square");
+        }
         return null;
     }
 
