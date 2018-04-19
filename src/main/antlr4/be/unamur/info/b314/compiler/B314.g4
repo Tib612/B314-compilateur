@@ -1,7 +1,6 @@
 grammar B314;
 import B314Words;
 
-root: ID;
 programme: DECLARE AND RETAIN
             ((
                 ( varDecl SEMICOLON | fctDecl )*
