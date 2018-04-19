@@ -157,10 +157,10 @@ public class Main {
         // Get abstract syntax tree
         LOG.debug("Parsing input");
         ANTLRInputStream a = new ANTLRInputStream(new FileInputStream(inputFile));
-        // LOG.debug("le fichier de test est:\n"+a.toString());
+        LOG.debug("le fichier de test est:\n"+a.toString());
         B314Parser.ProgrammeContext tree = parse(a);
-        // LOG.debug("Parsing input: done");
-        // LOG.debug("AST is {}", tree.toStringTree(parser));
+        LOG.debug("Parsing input: done");
+        LOG.debug("AST is {}", tree.toStringTree(parser));
 
         // LOG.debug("Verifying input");
         B314VisitorImpl visitor = new B314VisitorImpl();
