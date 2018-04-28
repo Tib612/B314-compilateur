@@ -42,6 +42,11 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
     public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
 
+        /*
+        nous devons ajouter les fonctions à la table des symbols sans vérifier que leurs contenu est correct.
+        De cette façons, lorsqu'une fonction en appellera une autres, déclarée plus loins dans le programme,
+        il sera déjà possible de vérifier si elle est correctement appellée (nb args)
+         */
         for (int i = 0; i < ctx.fctDecl().size(); i++) {
             addFunctionToSymbolsTable(ctx.fctDecl(i));
         }
@@ -59,7 +64,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      *
      * @param node
      */
-    public void visitChildrenVarDeclFirst(RuleNode node) {
+    private void visitChildrenVarDeclFirst(RuleNode node) {
         int n = node.getChildCount();
 
         for (int i = 0; i < n; ++i) {
@@ -100,8 +105,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             if (tmp instanceof B314Parser.VarDeclContext) {
                 if (((B314Parser.VarDeclContext) tmp).type().scalar() != null) {
                     argsTypes.add(((B314Parser.VarDeclContext) tmp).type().scalar().getText());
-                } else {
-
                 }
             }
         }
@@ -162,7 +165,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             throw new VariableAlreadyDefinedException(
                     "Error at " + ctxText + ": this name is the same as the function the variable is declared in!");
         }
-        String typeStr = "";
+        String typeStr ;
         int dimension = 0;
         if (type instanceof B314Parser.ScalarContext) {
             typeStr = type.getText();
@@ -293,7 +296,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitExprG(B314Parser.ExprGContext ctx) {
         visitChildren(ctx);
 
-        Scope scope = symTable.getCurrentScope();
         String lhsId = ctx.ID().getSymbol().getText();
         IdInfo lhsInfo = symTable.getIdInfo(lhsId);
 
