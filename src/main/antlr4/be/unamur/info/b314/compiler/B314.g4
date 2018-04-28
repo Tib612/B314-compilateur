@@ -2,11 +2,12 @@ grammar B314;
 import B314Words;
 
 programme: DECLARE AND RETAIN
+           ( varDecl SEMICOLON | fctDecl )*
             ((
-                ( varDecl SEMICOLON | fctDecl )*
                 ( instruction )*
             ) | (
-                ( varDecl SEMICOLON | fctDecl | impDecl )*
+                  impDecl
+                ( varDecl SEMICOLON | fctDecl )*
                 WHEN YOUR TURN
                 ( clauseWhen )*
             ))
