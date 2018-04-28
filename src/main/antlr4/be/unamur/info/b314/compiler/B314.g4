@@ -6,7 +6,7 @@ programme: DECLARE AND RETAIN
             ((
                 ( instruction )*
             ) | (
-                  impDecl
+                ( impDecl ) ?
                 ( varDecl SEMICOLON | fctDecl )*
                 WHEN YOUR TURN
                 ( clauseWhen )*
