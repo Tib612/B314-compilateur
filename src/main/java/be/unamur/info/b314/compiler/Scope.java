@@ -73,6 +73,7 @@ class IdInfo {
         this.idType = idType;
         this.dataType = dataType;
         this.dimension = dimension;
+        this.argsTypes = new ArrayList<String>();
     }
 
     public String getIdType() {
