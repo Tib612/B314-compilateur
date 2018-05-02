@@ -253,7 +253,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx) {
         LOG.debug("Visit 3: when");
-        visitChildren(ctx, "when");
+        visitChildren(ctx, "_when");
 
         return null;
     }
@@ -280,9 +280,10 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         symTable.createNewScope(scope);
         visitChildren(ctx);
         //don't delete the scope for the functions, it is required to check their return type
-        if (scope.equals("when") || scope.equals("default")) {
-            symTable.deleteScope(scope);
-        }
+        //don't delete any scope actually, we need them for P-Code
+        //if (scope.equals("when") || scope.equals("default")) {
+        //    symTable.deleteScope(scope);
+        //}
     }
 
     /**

@@ -14,6 +14,7 @@ public class SymbolsTable {
     private HashMap<String, Scope > symTable;
     private String currentScopeName;
     public static final String GLOBAL = "_global";
+    private int whenCounter = 0;
 
     public SymbolsTable(){
         symTable = new HashMap<String,Scope>();
@@ -50,6 +51,11 @@ public class SymbolsTable {
      * @effects the current scope is the newly created scope
      */ 
     public void createNewScope(String name){
+
+        if(name.equals("_when")){
+            name = name.concat( String.valueOf(whenCounter++));
+        }
+
         symTable.put(name, new Scope(name));
         currentScopeName = name;
     }
