@@ -11,33 +11,30 @@ import be.unamur.info.b314.compiler.PCodePrinter.PCodeTypes;
  */
 public class PCodeVisitor extends B314BaseVisitor<Object> {
 
-    private final Map<String, Integer> symTable;
+    private final SymbolsTable symTable;
 
     private final PCodePrinter printer;
     private final int nEnvVars = 99;
+    private int totnbVar;
+    private int whenCounter = 0;
 
-    public PCodeVisitor(Map<String, Integer> symTable, PCodePrinter printer) {
+
+    public PCodeVisitor(SymbolsTable symTable, PCodePrinter printer) {
         this.symTable = symTable;
         this.printer = printer;
     }
 
     @Override 
-    public Object visitProgramme(B314Parser.ProgrammeContext ctx) { 
-        initEnvironmentVariables();
+    public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
         printer.printComments("Start program");
-        super.visitProgramme(ctx); // visit childrens and print inside instructions
-        
-        // Trick, placeholder.
-        // TODO: Move this code to appropriate position 
-        printer.printSetStackPointer(nEnvVars + 1);
-        printer.printLoadAdress(PCodeTypes.Int, 0, nEnvVars);
-        printer.printLoadConstant(PCodeTypes.Int, 0); // next do nothing
-        printer.printStore(PCodeTypes.Int);
-        printer.printPrin();
-
+        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().size();
+        printer.printSetStackPointer(totnbVar);
+        initEnvironmentVariables();
+        initGlobalVar();
+        visitChildren(ctx);
         printer.printComments("End program");
         printer.printStop();
-        return visitChildren(ctx); 
+        return null;
     }
 
     /**
@@ -50,17 +47,53 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
      *      - section 5.3.2 (nearby...)
      */
     private void initEnvironmentVariables() {
-        printer.printComments("Initialize program");
-        printer.printSetStackPointer(nEnvVars);
+        printer.printComments("Initialize Environment Variables");
 
-        // TODO: check this 
         for (int i = 0; i < nEnvVars; i++) {
             printer.printLoadAdress(PCodeTypes.Int, 0, i);
             printer.printRead();
             printer.printStore(PCodeTypes.Int);
         }
+
     }
-    
+
+    private void initGlobalVar(){
+        printer.printComments("Initialize Global Variables");
+
+        for (int i = nEnvVars; i < totnbVar; i++) {
+            printer.printLoadAdress(PCodeTypes.Int, 0, i);
+            printer.printRead();
+            printer.printStore(PCodeTypes.Int);
+        }
+    }
+
+    @Override
+    public Void visitInstruction(B314Parser.InstructionContext ctx){
+        printer.printComments("instruction");
+        return null;
+    }
+
+    @Override
+    public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx){
+        printer.printComments("default");
+        return null;
+    }
+
+    @Override
+    public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx){
+        printer.printComments("when");
+        visitExprBool(ctx.exprBool());
+        printer.printFalseJump("_when");
+        return null;
+    }
+
+    @Override
+    public Void visitFctDecl(B314Parser.FctDeclContext ctx){
+        printer.printComments("fct");
+        return null;
+    }
+
+
     // @Override
     // public Object visitDemo(DEMOParser.DemoContext ctx) {
     //     printer.printSetStackPointer(symTable.size()); // Reserve space for variables

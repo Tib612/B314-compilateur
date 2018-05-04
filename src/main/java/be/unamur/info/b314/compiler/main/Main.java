@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+
+import be.unamur.info.b314.compiler.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
@@ -22,13 +24,7 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.unamur.info.b314.compiler.B314Parser;
-import be.unamur.info.b314.compiler.B314Lexer;
 import be.unamur.info.b314.compiler.exception.ParsingException;
-import be.unamur.info.b314.compiler.B314VisitorImpl;
-import be.unamur.info.b314.compiler.SymTableFiller;
-import be.unamur.info.b314.compiler.PCodePrinter;
-import be.unamur.info.b314.compiler.PCodeVisitor;
 
 /**
  *
@@ -170,11 +166,11 @@ public class Main {
 
         // Build symbol table
         LOG.debug("Building symbol table");
-        Map<String, Integer> symTable = fillSymTable(tree);
+        //Map<String, Integer> symTable = fillSymTable(tree);
         LOG.debug("Building symbol table: done");
         // Print PCode
         LOG.debug("Printing PCode");
-        printPCode(tree, symTable);
+        printPCode(tree, visitor.getSymTable() );
         LOG.debug("Printing PCode: done"); 
     }
 
@@ -219,7 +215,7 @@ public class Main {
     /**
      * Print PCode from AST and symtable.
      */
-    private void printPCode(B314Parser.ProgrammeContext tree, Map<String, Integer> symTable) 
+    private void printPCode(B314Parser.ProgrammeContext tree, SymbolsTable symTable)
         throws FileNotFoundException {
 
         PCodePrinter printer = new PCodePrinter(outputFile);

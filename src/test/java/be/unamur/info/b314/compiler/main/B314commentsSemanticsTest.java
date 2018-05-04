@@ -62,4 +62,37 @@ public class B314commentsSemanticsTest {
         assertThat(result.getOutLines(), contains("0", "0", "0", "0", "0"));
     }
 
+
+    @Test
+    public void testpcodeall() throws Exception{
+        File pcodeFile = testFolder.newFile();
+        CompilerTestHelper.launchCompilation("/pcode/all.b314", pcodeFile, true, "comments: all");
+        LOG.debug("PCode is: {{}", FileUtils.readFileToString(pcodeFile));
+
+        InterpreterResult result;
+        // Turns: 1
+        LOG.debug("Starting interpretation with 1 turn");
+        result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 1);
+        if (result.getExitStatus() != 0) {
+            for (String line : result.getErrLines()) {
+                LOG.debug(line);
+            }
+        }
+
+        assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
+        assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(1));
+        assertThat(result.getOutLines(), contains("0"));
+        // Turns: 3
+        LOG.debug("Starting interpretation with 3 turn");
+        result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 3);
+        assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
+        assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(3));
+        assertThat(result.getOutLines(), contains("0", "0", "0"));
+        // Turns 5
+        LOG.debug("Starting interpretation with 5 turn");
+        result = PCodeInterpreter.getInterpreter().execute(pcodeFile, 5);
+        assertThat("Interpreter exist status was not 0", result.getExitStatus(), equalTo(0));
+        assertThat("Wrong number of outputs, there was 1 turn", result.getOutLines(), hasSize(5));
+        assertThat(result.getOutLines(), contains("0", "0", "0", "0", "0"));
+    }
 }
