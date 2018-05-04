@@ -26,6 +26,10 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
     private SymbolsTable symTable;
 
+    public SymbolsTable getSymTable(){
+        return symTable;
+    }
+
     /**
      * @effects initialize an empty symTable.
      */
@@ -204,7 +208,18 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
             LOG.debug("A " + dimension + "D array of type " + typeStr + " was declared and named " + id);
         }
-        symTable.put(scopeName, id, new IdInfo("var", typeStr, dimension));
+        if(dimension == 0) {
+            symTable.put(scopeName, id, new IdInfo("var", typeStr));
+        }else if(dimension == 1) {
+            B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
+            int dim1 = Integer.valueOf(arrType.INT(0).getSymbol().getText());
+            symTable.put(scopeName, id, new IdInfo("var", typeStr,dim1));
+        }else if(dimension == 2) {
+            B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
+            int dim1 = Integer.valueOf(arrType.INT(0).getSymbol().getText());
+            int dim2 = Integer.valueOf(arrType.INT(1).getSymbol().getText());
+            symTable.put(scopeName, id, new IdInfo("var", typeStr,dim1,dim2));
+        }
     }
 
     /**

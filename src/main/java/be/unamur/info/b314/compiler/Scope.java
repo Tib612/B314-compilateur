@@ -20,6 +20,10 @@ public class Scope {
         scope = new HashMap<>();
     }
 
+    public int size(){
+        return scope.size();
+    }
+
     public boolean containsKey(String id) {
         return scope.containsKey(id);
     }
@@ -41,7 +45,7 @@ public class Scope {
         for (Map.Entry<String, IdInfo> subEntry : scope.entrySet()) {
             IdInfo info = subEntry.getValue();
             System.out.println("\t" + subEntry.getKey() + "/ [" + info.getIdType()
-                    + " , " + info.getDataType() + " , " + info.getDimension() + " , " + info.getNbArg() + " ]");
+                    + " , " + info.getDataType() + " , dim: " + info.getDimensionInfo() + " , nbArg: " + info.getNbArg() + " ]");
         }
     }
 }
@@ -59,21 +63,55 @@ class IdInfo {
 
     private String idType;
     private String dataType;
-    private int dimension;
+    private int[] dimension;
     private ArrayList<String> argsTypes;
+
+    public IdInfo(String idType, String dataType, ArrayList<String> argsTypes) {
+        this.idType = idType;
+        this.dataType = dataType;
+        this.dimension = new int[0];
+        this.argsTypes = argsTypes;
+    }
 
     public IdInfo(String idType, String dataType, int dimension, ArrayList<String> argsTypes) {
         this.idType = idType;
         this.dataType = dataType;
-        this.dimension = dimension;
+        this.dimension = new int[1];
+        this.dimension[0] = dimension;
         this.argsTypes = argsTypes;
+    }
+
+    public IdInfo(String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
+        this.idType = idType;
+        this.dataType = dataType;
+        this.dimension = new int[2];
+        this.dimension[0] = dimension1;
+        this.dimension[1] = dimension2;
+        this.argsTypes = argsTypes;
+    }
+
+    public IdInfo(String idType, String dataType) {
+        this.idType = idType;
+        this.dataType = dataType;
+        this.dimension = new int[0];
+        this.argsTypes = new ArrayList<>();
     }
 
     public IdInfo(String idType, String dataType, int dimension) {
         this.idType = idType;
         this.dataType = dataType;
-        this.dimension = dimension;
-        this.argsTypes = new ArrayList<String>();
+        this.dimension = new int[1];
+        this.dimension[0] = dimension;
+        this.argsTypes = new ArrayList<>();
+    }
+
+    public IdInfo(String idType, String dataType, int dimension1, int dimension2) {
+        this.idType = idType;
+        this.dataType = dataType;
+        this.dimension = new int[2];
+        this.dimension[0] = dimension1;
+        this.dimension[1] = dimension2;
+        this.argsTypes = new ArrayList<>();
     }
 
     public String getIdType() {
@@ -85,7 +123,22 @@ class IdInfo {
     }
 
     public int getDimension() {
+        return dimension.length;
+    }
+
+    public int[] getDimensionArray() {
         return dimension;
+    }
+
+    public String getDimensionInfo() {
+        if(dimension.length == 0){
+            return "/";
+        }else if(dimension.length == 1){
+            return "[ "+ dimension[0] +" ]";
+        }else if(dimension.length == 2){
+            return "[ "+ dimension[0] + " , " + dimension[1] +" ]";
+        }
+        return "";
     }
 
     public int getNbArg() {return argsTypes.size();}
