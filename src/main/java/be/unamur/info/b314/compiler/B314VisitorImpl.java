@@ -282,7 +282,7 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     @Override
     public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx) {
         LOG.debug("Visit 4: default");
-        visitChildren(ctx, "default");
+        visitChildren(ctx, "_default");
 
         return null;
     }
