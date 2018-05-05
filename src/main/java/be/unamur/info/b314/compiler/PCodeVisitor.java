@@ -100,6 +100,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if (ctx.COMPUTE() != null){
 
         }
+        //Todo :  instruction
+
         return null;
     }
 
@@ -191,7 +193,14 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
         }
-        printer.printReturnFromFunction();
+
+        if(ctx.exprD() != null){
+            visitExprD(ctx.exprD());
+            printer.printReturnFromFunction();
+        }else{
+            printer.printReturnFromProcedure();
+        }
+
         return null;
     }
 
@@ -204,9 +213,25 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             printer.printLoadConstant(PCodeTypes.Bool, 0);
         }else if(ctx.IS() != null){
             if(ctx.ENNEMI() != null){
-                //check for N S E W
+                if(ctx.NORTH() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,9);
+                }else if(ctx.EAST() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,10);
+                }else if(ctx.SOUTH() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,11);
+                }else if(ctx.WEST() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,12);
+                }
             }else if(ctx.GRAAL() != null){
-                //check for N S E W
+                if(ctx.NORTH() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,13);
+                }else if(ctx.EAST() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,14);
+                }else if(ctx.SOUTH() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,15);
+                }else if(ctx.WEST() != null){
+                    printer.printLoad(PCodeTypes.Bool,0,16);
+                }
             }
         }else if(ctx.NOT() != null){
             visitExprBool(ctx.exprBool(0));
@@ -259,47 +284,101 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     public void visitFctCall(String id, List<B314Parser.ExprDContext> ls){
         printer.printComments("function call");
+        printer.printComments(" !!!   !!  ! !! !! forgot args");
         printer.printMarkStack(0);
         printer.printCallUserProcedure(0,id);
     }
 
     @Override
-    public Object visitExprD(B314Parser.ExprDContext ctx) {
-        return super.visitExprD(ctx);
+    public Void visitExprD(B314Parser.ExprDContext ctx) {
+        if(ctx.exprG() != null){
+            visitExprG(ctx.exprG());
+        }else if(ctx.ID() != null){
+            visitFctCall(ctx.ID().getText(),ctx.exprD());
+        }else if(ctx.exprCase() != null){
+            visitExprCase(ctx.exprCase());
+        }else if(ctx.exprD() != null){
+            visitExprD(ctx.exprD(0));
+        }else if(ctx.exprBool() != null){
+            visitExprBool(ctx.exprBool());
+        }else if(ctx.exprEnt() != null){
+            visitExprEnt(ctx.exprEnt());
+        }
+        return null;
     }
 
     @Override
-    public Object visitExprEnt(B314Parser.ExprEntContext ctx) {
-        return super.visitExprEnt(ctx);
+    public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
+        if(ctx.INT() != null){
+            if(ctx.MINUS() != null){
+                //does this even occure ?
+                printer.printComments(" negative number error ");
+            }else{
+                printer.printLoadConstant(PCodeTypes.Int,Integer.valueOf(ctx.INT().getSymbol().getText()));
+            }
+        }else if(ctx.LATITUDE() != null){
+            printer.printLoad(PCodeTypes.Int,0,0);
+        }else if(ctx.LONGITUDE() != null){
+            printer.printLoad(PCodeTypes.Int,0,1);
+        }else if(ctx.GRID() != null){
+            printer.printLoad(PCodeTypes.Int,0,2);
+        }else if(ctx.COUNT() != null){
+            if(ctx.MAP() != null){
+                printer.printLoad(PCodeTypes.Int,0, 3);
+            }else if(ctx.RADIO() != null){
+                printer.printLoad(PCodeTypes.Int,0, 4);
+            }else if(ctx.AMMO() != null){
+                printer.printLoad(PCodeTypes.Int,0, 5);
+            }else if(ctx.FRUITS() != null){
+                printer.printLoad(PCodeTypes.Int,0, 6);
+            }else if(ctx.SODA() != null){
+                printer.printLoad(PCodeTypes.Int,0, 7);
+            }
+        }else if(ctx.LIFE() != null){
+            printer.printLoad(PCodeTypes.Int,0, 8);
+        }else if(ctx.exprEnt().size() == 2){
+            visitExprEnt(ctx.exprEnt(0));
+            visitExprEnt(ctx.exprEnt(1));
+            if(ctx.PLUS() != null){
+                printer.printAdd(PCodeTypes.Int);
+            }else if(ctx.MINUS() != null){
+                printer.printSub(PCodeTypes.Int);
+            }else if(ctx.MULT() != null){
+                printer.printMul(PCodeTypes.Int);
+            }else if(ctx.DIV() != null){
+                printer.printDiv(PCodeTypes.Int);
+            }else if(ctx.MODULO() != null){
+                printer.printMod(PCodeTypes.Int);
+            }
+        }else if(ctx.ID() != null){
+            visitFctCall(ctx.ID().getText(),ctx.exprD());
+        }else if(ctx.exprEnt().size() == 1){
+            visitExprEnt(ctx.exprEnt(0));
+        }else if(ctx.exprG() != null){
+            visitExprG(ctx.exprG());
+        }
+        return null;
     }
 
     @Override
-    public Object visitExprCase(B314Parser.ExprCaseContext ctx) {
-        return super.visitExprCase(ctx);
+    public Void visitExprCase(B314Parser.ExprCaseContext ctx) {
+        if(ctx.exprG() != null){
+            visitExprG(ctx.exprG());
+        }else if(ctx.ID() != null) {
+            visitFctCall(ctx.ID().getText(), ctx.exprD());
+        }
+        //Todo les autres cas
+        return null;
     }
 
     @Override
-    public Object visitExprG(B314Parser.ExprGContext ctx) {
-        return super.visitExprG(ctx);
+    public Void visitExprG(B314Parser.ExprGContext ctx) {
+        //Todo implement smth to find the address of a var from the current scope and a smth to know the current scope
+        //here, I used our SymbolsTable but it could be usefull to create a new one like in the demo compiler
+        //e.g.   var1[1] is address 0 0   from global
+        //e.g.   var1[1] is address 1 0   from a scope because var1 is not declare in that scope
+        //Todo change all load 0 x par load 1 x si on accède à une var global depuis un scope
+        return null;
     }
-
-    // @Override
-    // public Object visitDemo(DEMOParser.DemoContext ctx) {
-    //     printer.printSetStackPointer(symTable.size()); // Reserve space for variables
-    //     printer.printComments("Start instructions");
-    //     super.visitDemo(ctx); // Print instructions
-    //     printer.printComments("End instructions");
-    //     printer.printStop(); // Stop execution
-    //     return null;
-    // }
-
-    // @Override
-    // public Object visitAffectInstr(DEMOParser.AffectInstrContext ctx) {
-    //     String var = ctx.ID().getText();
-    //     printer.printLoadAdress(PCodeTypes.Int, 0, symTable.get(var)); // Load variable adress
-    //     ctx.expression().accept(this); // Compute expression
-    //     printer.printStore(PCodeTypes.Int);
-    //     return null;
-    // }
 
 }
