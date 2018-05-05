@@ -150,7 +150,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printCallUserProcedure(0,"_default"+"start");
         printer.printUnconditionalJump("_default");
         printer.printDefineLabel("_default"+"start");
-        printer.printSetStackPointer(symTable.getScope("_default").size());
+        printer.printSetStackPointer(5+symTable.getScope("_default").size());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
@@ -170,7 +170,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printCallUserProcedure(0,"_when"+whenCounter+"start");
         printer.printUnconditionalJump("_when"+whenCounter);
         printer.printDefineLabel("_when"+whenCounter+"start");
-        printer.printSetStackPointer(symTable.getScope("_when"+whenCounter).size());
+        printer.printSetStackPointer(5+symTable.getScope("_when"+whenCounter).size());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
@@ -186,7 +186,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitFctDecl(B314Parser.FctDeclContext ctx){
         printer.printComments("fct");
         printer.printDefineLabel(ctx.ID().getText());
-        printer.printSetStackPointer(symTable.getScope(ctx.ID().getText()).size());
+        printer.printSetStackPointer(5+symTable.getScope(ctx.ID().getText()).size());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
