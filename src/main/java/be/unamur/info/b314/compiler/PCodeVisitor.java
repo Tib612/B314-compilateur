@@ -265,7 +265,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprG(ctx.exprG(0));
             visitExprG(ctx.exprG(1));
             printer.printEqualsValues(PCodeTypes.Bool);
-        }else if(ctx.exprCase() != null && ctx.EQUAL() != null){
+        }else if(ctx.exprCase().size() != 0 && ctx.EQUAL() != null){
             visitExprCase(ctx.exprCase(0));
             visitExprCase(ctx.exprCase(1));
             printer.printEqualsValues(PCodeTypes.Int);
@@ -323,7 +323,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprCase(ctx.exprCase());
         }else if(ctx.exprEnt() != null){
             visitExprEnt(ctx.exprEnt());
-        }else if(ctx.exprD() != null){
+        }else if(ctx.exprD().size() != 0){
+            LOG.debug(ctx.exprD().toString());
             visitExprD(ctx.exprD(0));
         }else if(ctx.exprBool() != null){
             visitExprBool(ctx.exprBool());
