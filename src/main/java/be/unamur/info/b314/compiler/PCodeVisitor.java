@@ -100,6 +100,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
         }else if (ctx.COMPUTE() != null){
 
+        }else if (ctx.SKIPINS() != null){
+            printer.printLoadConstant(PCodeTypes.Int, 0);
+            printer.printPrin();
         }
         //Todo :  instruction
 
@@ -168,9 +171,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx){
-        symTable.setCurrentScopeName("_when"+whenCounter);
         printer.printComments("when");
         visitExprBool(ctx.exprBool());
+        symTable.setCurrentScopeName("_when"+whenCounter);
         printer.printFalseJump("_when"+whenCounter);
         printer.printMarkStack(0);
         printer.printCallUserProcedure(0,"_when"+whenCounter+"start");
@@ -258,14 +261,14 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitFctCall(ctx.ID().getText(),ctx.exprD());
         }else if(ctx.LPAR() != null){
             visitExprBool(ctx.exprBool(0));
-        }else if(ctx.exprG() != null && ctx.EQUAL() != null){
+        }else if(ctx.exprG().size() != 0 && ctx.EQUAL() != null){
             visitExprG(ctx.exprG(0));
             visitExprG(ctx.exprG(1));
             printer.printEqualsValues(PCodeTypes.Bool);
         }else if(ctx.exprCase() != null && ctx.EQUAL() != null){
             visitExprCase(ctx.exprCase(0));
             visitExprCase(ctx.exprCase(1));
-            printer.printEqualsValues(PCodeTypes.Bool);
+            printer.printEqualsValues(PCodeTypes.Int);
         }else if(ctx.exprEnt() != null){
             if(ctx.EQUAL() != null){
                 visitExprEnt(ctx.exprEnt(0));
@@ -387,14 +390,49 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprG(ctx.exprG());
         }else if(ctx.ID() != null) {
             visitFctCall(ctx.ID().getText(), ctx.exprD());
+        }else if(ctx.NEARBY() != null){
+            if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL))
+                printer.printLoadAdress(PCodeTypes.Int,0,17);
+            else
+                printer.printLoadAdress(PCodeTypes.Int,1,17);
+
+            if (ctx.exprEnt().size() == 2) {
+                visitExprEnt(ctx.exprEnt(1));
+                printer.printIndexedAdressComputation(9);
+            }
+            visitExprEnt(ctx.exprEnt(0));
+            printer.printIndexedAdressComputation(1);
+            printer.printIndexedFetch(PCodeTypes.Int);
+        }else if(ctx.DIRT() != null){
+            printer.printLoadConstant(PCodeTypes.Int,0);
+        }else if(ctx.ROCK() != null){
+            printer.printLoadConstant(PCodeTypes.Int,1);
+        }else if(ctx.VINES() != null){
+            printer.printLoadConstant(PCodeTypes.Int,2);
+        }else if(ctx.ZOMBIE() != null){
+            printer.printLoadConstant(PCodeTypes.Int,3);
+        }else if(ctx.ENNEMI() != null){
+            printer.printLoadConstant(PCodeTypes.Int,4);
+        }else if(ctx.PLAYER() != null){
+            printer.printLoadConstant(PCodeTypes.Int,5);
+        }else if(ctx.MAP() != null){
+            printer.printLoadConstant(PCodeTypes.Int,6);
+        }else if(ctx.RADIO() != null){
+            printer.printLoadConstant(PCodeTypes.Int,7);
+        }else if(ctx.AMMO() != null){
+            printer.printLoadConstant(PCodeTypes.Int,8);
+        }else if(ctx.FRUITS() != null){
+            printer.printLoadConstant(PCodeTypes.Int,9);
+        }else if(ctx.SODA() != null){
+            printer.printLoadConstant(PCodeTypes.Int,10);
+        }else if(ctx.GRAAL() != null){
+            printer.printLoadConstant(PCodeTypes.Int,11);
         }
-        //Todo les autres cas
         return null;
     }
 
     @Override
     public Void visitExprG(B314Parser.ExprGContext ctx) {
-
         int [] address = symTable.getRelativeAddress(ctx.ID().getText());
         String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
         PCodeTypes type= PCodeTypes.Adr;
