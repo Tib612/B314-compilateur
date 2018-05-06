@@ -34,7 +34,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     @Override 
     public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
         symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
-        printer.printComments("Start program");
+        printer.printComments("Start program: "+ctx.getText());
         totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId();
         printer.printSetStackPointer(totnbVar);
         initEnvironmentVariables();
@@ -156,6 +156,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if (ctx.SKIPINS() != null){
             printer.printLoadConstant(PCodeTypes.Int, 0);
             printer.printPrin();
+        }else {
+            printer.printComments("strange");
         }
 
         return null;
@@ -196,6 +198,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }else if(ctx.SODA() != null){
                 printer.printLoadConstant(PCodeTypes.Int, 12);
             }
+        }else {
+            printer.printComments("strange");
         }
         printer.printPrin();
         return null;
@@ -321,7 +325,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprCase(ctx.exprCase(0));
             visitExprCase(ctx.exprCase(1));
             printer.printEqualsValues(PCodeTypes.Int);
-        }else if(ctx.exprEnt() != null){
+        }else if(ctx.exprEnt() != null && ctx.exprEnt().size() != 0 ){
             if(ctx.EQUAL() != null){
                 visitExprEnt(ctx.exprEnt(0));
                 visitExprEnt(ctx.exprEnt(1));
@@ -335,7 +339,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 visitExprEnt(ctx.exprEnt(1));
                 printer.printGreather(PCodeTypes.Int);
             }
-        }else if(ctx.exprBool() != null){
+        }else if(ctx.exprBool() != null && ctx.exprBool().size() != 0){
             if(ctx.AND() != null){
                 visitExprBool(ctx.exprBool(0));
                 visitExprBool(ctx.exprBool(1));
@@ -351,6 +355,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }
         }else if(ctx.exprG() != null){
             visitExprG(ctx.exprG(0));
+        }else {
+            printer.printComments("strange");
         }
         return null;
     }
@@ -382,6 +388,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprD(ctx.exprD(0));
         }else if(ctx.exprBool() != null){
             visitExprBool(ctx.exprBool());
+        }else {
+            printer.printComments("strange");
         }
         return null;
     }
@@ -436,6 +444,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprEnt(ctx.exprEnt(0));
         }else if(ctx.exprG() != null){
             visitExprG(ctx.exprG());
+        }else {
+            printer.printComments("strange");
         }
         return null;
     }
@@ -485,6 +495,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             printer.printLoadConstant(PCodeTypes.Int,10);
         }else if(ctx.GRAAL() != null){
             printer.printLoadConstant(PCodeTypes.Int,11);
+        }else {
+            printer.printComments("strange");
         }
         return null;
     }
