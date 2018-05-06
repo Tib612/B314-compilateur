@@ -88,7 +88,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitInstruction(B314Parser.InstructionContext ctx){
-        printer.printComments("instruction");
+        printer.printComments("instruction "+ctx.getText());
         if(ctx.action() != null){
             visitAction(ctx.action());
         }else if(ctx.ELSE() != null){
@@ -163,7 +163,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitAction(B314Parser.ActionContext ctx){
-
+        printer.printComments("action "+ctx.getText());
         if(ctx.DO() != null){
             printer.printLoadConstant(PCodeTypes.Int, 0);
         }else if(ctx.MOVE() != null){
@@ -204,7 +204,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     @Override
     public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx){
         symTable.setCurrentScopeName("_default");
-        printer.printComments("default");
+        printer.printComments("default "+ctx.getText());
         printer.printMarkStack(0);
         printer.printCallUserProcedure(0,"_default"+"start");
         printer.printUnconditionalJump("_default");
@@ -223,7 +223,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx){
-        printer.printComments("when");
+        printer.printComments("when "+ctx.getText());
         visitExprBool(ctx.exprBool());
         symTable.setCurrentScopeName("_when"+whenCounter);
         printer.printFalseJump("_when"+whenCounter);
@@ -247,7 +247,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     @Override
     public Void visitFctDecl(B314Parser.FctDeclContext ctx){
         symTable.setCurrentScopeName(ctx.ID().getText());
-        printer.printComments("fct");
+        printer.printComments("fct"+ctx.getText());
         printer.printDefineLabel(ctx.ID().getText());
         printer.printSetStackPointer(5+symTable.getScope(ctx.ID().getText()).getScopeMaxId());
 
@@ -279,7 +279,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprBool(B314Parser.ExprBoolContext ctx){
-        printer.printComments("bool");
+        printer.printComments("bool"+ctx.getText());
         if(ctx.TRUE() != null) {
             printer.printLoadConstant(PCodeTypes.Bool, 1);
         }else if(ctx.FALSE() != null) {
@@ -356,7 +356,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     }
 
     public void visitFctCall(String id, List<B314Parser.ExprDContext> ls){
-        printer.printComments("function call");
+        printer.printComments("function call: "+id);
         printer.printMarkStack(0);
         //load all arguments in top of stack
         for(int i=0;i<ls.size();i++){
@@ -367,6 +367,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprD(B314Parser.ExprDContext ctx) {
+        printer.printComments("expr D: "+ctx.getText());
+
         if(ctx.exprG() != null){
             visitExprG(ctx.exprG());
         }else if(ctx.ID() != null){
@@ -386,10 +388,11 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
+        printer.printComments("expr E: "+ctx.getText());
+
         if(ctx.INT() != null){
             if(ctx.MINUS() != null){
-                //does this even occure ?
-                printer.printComments(" negative number error ");
+                printer.printLoadConstant(PCodeTypes.Int,-1*Integer.valueOf(ctx.INT().getSymbol().getText()));
             }else{
                 printer.printLoadConstant(PCodeTypes.Int,Integer.valueOf(ctx.INT().getSymbol().getText()));
             }
@@ -439,6 +442,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprCase(B314Parser.ExprCaseContext ctx) {
+        printer.printComments("expr C: "+ctx.getText());
+
         if(ctx.exprG() != null){
             visitExprG(ctx.exprG());
         }else if(ctx.ID() != null) {
@@ -486,6 +491,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprG(B314Parser.ExprGContext ctx) {
+        printer.printComments("expr G: "+ctx.getText());
+
         addressExprG(ctx);
 
 
@@ -503,6 +510,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     }
 
     public Void addressExprG(B314Parser.ExprGContext ctx) {
+        printer.printComments("expr G address: "+ctx.getText());
+
         int [] address = symTable.getRelativeAddress(ctx.ID().getText());
         String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
         PCodeTypes type= PCodeTypes.Adr;
