@@ -284,9 +284,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     public void visitFctCall(String id, List<B314Parser.ExprDContext> ls){
         printer.printComments("function call");
-        printer.printComments(" !!!   !!  ! !! !! forgot args");
         printer.printMarkStack(0);
-        printer.printCallUserProcedure(0,id);
+        //load all arguments in top of stack
+        for(int i=0;i<ls.size();i++){
+            visitExprD(ls.get(i));
+        }
+        printer.printCallUserProcedure(ls.size(),id);
     }
 
     @Override
@@ -297,12 +300,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitFctCall(ctx.ID().getText(),ctx.exprD());
         }else if(ctx.exprCase() != null){
             visitExprCase(ctx.exprCase());
+        }else if(ctx.exprEnt() != null){
+            visitExprEnt(ctx.exprEnt());
         }else if(ctx.exprD() != null){
             visitExprD(ctx.exprD(0));
         }else if(ctx.exprBool() != null){
             visitExprBool(ctx.exprBool());
-        }else if(ctx.exprEnt() != null){
-            visitExprEnt(ctx.exprEnt());
         }
         return null;
     }

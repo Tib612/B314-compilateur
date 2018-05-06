@@ -78,9 +78,11 @@ public class SymbolsTable {
      * @param varName the name of the variable to be added
      * @param info IdInfo object containing informations related to the variable
      */
+    /*
     public void put(String scope, String varName, IdInfo info) {
         symTable.get(scope).put(varName, info);
     }
+    */
 
     /**
      * Add global variable/function data to the global dictionary
@@ -88,9 +90,11 @@ public class SymbolsTable {
      * @param varName the name of the variable to be added
      * @param info IdInfo object containing informations related to the variable
      */
+    /*
     public void putGlobal(String varName, IdInfo info) {
         this.put(GLOBAL, varName, info);
     }
+    */
 
     /**
      * Find information related to the given variable. If there are two variables (one global

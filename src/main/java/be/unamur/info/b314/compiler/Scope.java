@@ -14,6 +14,7 @@ public class Scope {
 
     private String name;
     private HashMap<String, IdInfo> scope;
+    private int scopeMaxId =0;
 
     public Scope(String fctName) {
         name = fctName;
@@ -28,8 +29,12 @@ public class Scope {
         return scope.containsKey(id);
     }
 
-    public void put(String name, IdInfo info) {
-        scope.put(name, info);
+    public void put(String name, String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
+        scope.put(name, new IdInfo(scopeMaxId++,idType,dataType,dimension1,dimension2,argsTypes));
+    }
+
+    public void put(String name, String idType, String dataType, int dimension1, int dimension2) {
+        scope.put(name, new IdInfo(scopeMaxId++,idType,dataType,dimension1,dimension2));
     }
 
     public String getName() {
@@ -65,52 +70,42 @@ class IdInfo {
     private String dataType;
     private int[] dimension;
     private ArrayList<String> argsTypes;
+    private int addressPCode;
 
-    public IdInfo(String idType, String dataType, ArrayList<String> argsTypes) {
+    public IdInfo(int id, String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
+        addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        this.dimension = new int[0];
+        if(dimension1 == 0){
+            this.dimension = new int[0];
+        }else{
+            if(dimension2 == 0){
+                this.dimension = new int[1];
+            }else{
+                this.dimension = new int[2];
+                this.dimension[1] = dimension2;
+            }
+            this.dimension[0] = dimension1;
+        }
         this.argsTypes = argsTypes;
     }
 
-    public IdInfo(String idType, String dataType, int dimension, ArrayList<String> argsTypes) {
-        this.idType = idType;
-        this.dataType = dataType;
-        this.dimension = new int[1];
-        this.dimension[0] = dimension;
-        this.argsTypes = argsTypes;
-    }
 
-    public IdInfo(String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
+    public IdInfo(int id,String idType, String dataType, int dimension1, int dimension2) {
+        addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        this.dimension = new int[2];
-        this.dimension[0] = dimension1;
-        this.dimension[1] = dimension2;
-        this.argsTypes = argsTypes;
-    }
-
-    public IdInfo(String idType, String dataType) {
-        this.idType = idType;
-        this.dataType = dataType;
-        this.dimension = new int[0];
-        this.argsTypes = new ArrayList<>();
-    }
-
-    public IdInfo(String idType, String dataType, int dimension) {
-        this.idType = idType;
-        this.dataType = dataType;
-        this.dimension = new int[1];
-        this.dimension[0] = dimension;
-        this.argsTypes = new ArrayList<>();
-    }
-
-    public IdInfo(String idType, String dataType, int dimension1, int dimension2) {
-        this.idType = idType;
-        this.dataType = dataType;
-        this.dimension = new int[2];
-        this.dimension[0] = dimension1;
-        this.dimension[1] = dimension2;
+        if(dimension1 == 0){
+            this.dimension = new int[0];
+        }else{
+            if(dimension2 == 0){
+                this.dimension = new int[1];
+            }else{
+                this.dimension = new int[2];
+                this.dimension[1] = dimension2;
+            }
+            this.dimension[0] = dimension1;
+        }
         this.argsTypes = new ArrayList<>();
     }
 
