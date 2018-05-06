@@ -14,7 +14,7 @@ public class Scope {
 
     private String name;
     private HashMap<String, IdInfo> scope;
-    private int scopeMaxId =0;
+    private int scopeMaxId = 0;
 
     public Scope(String fctName) {
         name = fctName;
@@ -30,11 +30,31 @@ public class Scope {
     }
 
     public void put(String name, String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
-        scope.put(name, new IdInfo(scopeMaxId++,idType,dataType,dimension1,dimension2,argsTypes));
+        scope.put(name, new IdInfo(scopeMaxId,idType,dataType,dimension1,dimension2,argsTypes));
+        if(!idType.equals("fct")) {
+            if (dimension1 == 0) {
+                scopeMaxId++;
+            } else {
+                if (dimension2 == 0) {
+                    scopeMaxId += dimension1;
+                } else {
+                    scopeMaxId += dimension1 * dimension2;
+                }
+            }
+        }
     }
 
     public void put(String name, String idType, String dataType, int dimension1, int dimension2) {
-        scope.put(name, new IdInfo(scopeMaxId++,idType,dataType,dimension1,dimension2));
+        scope.put(name, new IdInfo(scopeMaxId,idType,dataType,dimension1,dimension2));
+        if(dimension1 == 0){
+            scopeMaxId++;
+        }else{
+            if(dimension2 == 0){
+                scopeMaxId += dimension1;
+            }else{
+                scopeMaxId += dimension1 * dimension2;
+            }
+        }
     }
 
     public String getName() {
@@ -43,6 +63,10 @@ public class Scope {
 
     public IdInfo getVar(String id) {
         return scope.get(id);
+    }
+
+    public int getScopeMaxId(){
+        return scopeMaxId;
     }
 
     public void printScope() {
@@ -123,6 +147,10 @@ class IdInfo {
 
     public int[] getDimensionArray() {
         return dimension;
+    }
+
+    public int getAddressPCode(){
+        return addressPCode;
     }
 
     public String getDimensionInfo() {

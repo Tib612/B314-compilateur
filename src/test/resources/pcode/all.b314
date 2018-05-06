@@ -12,7 +12,7 @@ declare and retain
     i1 as integer;
     i2 as integer;
 
-    fct1 as function():boolean
+    fct1 as function(arg1 as integer):boolean
 		declare local
 			loc1 as integer;
 			loc2 as boolean;
@@ -20,6 +20,8 @@ declare and retain
 			loc4 as integer[5];
 			f1 as boolean;
     	do
+    	    set b1 to true
+    	    set loc4[3] to 3
     		set loc2 to true
     		set loc1 to 34
     		set f1 to loc2 and loc1 < 42
@@ -32,7 +34,7 @@ when your turn
 		next move west
 	done
 
-	when fct1() do
+	when fct1(10) do
 		next move north
 	done
 

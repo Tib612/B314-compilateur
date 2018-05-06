@@ -60,6 +60,10 @@ public class SymbolsTable {
         currentScopeName = name;
     }
 
+    public void setCurrentScopeName(String name){
+        currentScopeName = name;
+    }
+
     /**
      * Delete the dictionary of a particular scope
      * 
@@ -108,8 +112,22 @@ public class SymbolsTable {
         if (!scope.containsKey(varName)) {
             scope = getGlobalScope();
         }
-
         return scope.getVar(varName);
+    }
+
+    public int[] getRelativeAddress(String varName){
+        int[] result = new int[2];
+
+        Scope scope = getCurrentScope();
+        if (!scope.containsKey(varName)) {
+            result[0] = 1;
+            scope = getGlobalScope();
+        }else{
+            result[0] = 0;
+        }
+
+        result[1] = scope.getVar(varName).getAddressPCode();
+        return result;
     }
 
     public void printSymbolsTable(){

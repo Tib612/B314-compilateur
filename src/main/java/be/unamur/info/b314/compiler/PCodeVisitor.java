@@ -32,8 +32,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override 
     public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
+        symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         printer.printComments("Start program");
-        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().size();
+        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId();
         printer.printSetStackPointer(totnbVar);
         initEnvironmentVariables();
         initGlobalVar();
@@ -147,12 +148,13 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx){
+        symTable.setCurrentScopeName("_default");
         printer.printComments("default");
         printer.printMarkStack(0);
         printer.printCallUserProcedure(0,"_default"+"start");
         printer.printUnconditionalJump("_default");
         printer.printDefineLabel("_default"+"start");
-        printer.printSetStackPointer(5+symTable.getScope("_default").size());
+        printer.printSetStackPointer(5+symTable.getScope("_default").getScopeMaxId());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
@@ -160,11 +162,13 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
         printer.printReturnFromProcedure();
         printer.printDefineLabel("_default");
+        symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         return null;
     }
 
     @Override
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx){
+        symTable.setCurrentScopeName("_when"+whenCounter);
         printer.printComments("when");
         visitExprBool(ctx.exprBool());
         printer.printFalseJump("_when"+whenCounter);
@@ -172,7 +176,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printCallUserProcedure(0,"_when"+whenCounter+"start");
         printer.printUnconditionalJump("_when"+whenCounter);
         printer.printDefineLabel("_when"+whenCounter+"start");
-        printer.printSetStackPointer(5+symTable.getScope("_when"+whenCounter).size());
+        printer.printSetStackPointer(5+symTable.getScope("_when"+whenCounter).getScopeMaxId());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
@@ -181,26 +185,40 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printReturnFromProcedure();
         printer.printDefineLabel("_when"+whenCounter);
         whenCounter++;
+        symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         return null;
     }
 
     @Override
     public Void visitFctDecl(B314Parser.FctDeclContext ctx){
+        symTable.setCurrentScopeName(ctx.ID().getText());
         printer.printComments("fct");
         printer.printDefineLabel(ctx.ID().getText());
-        printer.printSetStackPointer(5+symTable.getScope(ctx.ID().getText()).size());
+        printer.printSetStackPointer(5+symTable.getScope(ctx.ID().getText()).getScopeMaxId());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
         }
 
         if(ctx.exprD() != null){
+            String typeString = ctx.scalar().getText();
+            PCodeTypes type= PCodeTypes.Adr;
+            if(typeString.equals("boolean")){
+                type = PCodeTypes.Bool;
+            }else if(typeString.equals("integer")){
+                type = PCodeTypes.Int;
+            }else if(typeString.equals("square")){
+                type = PCodeTypes.Adr;
+            }
+
+            printer.printLoadAdress(type,0,0);
             visitExprD(ctx.exprD());
+            printer.printStore(type);
             printer.printReturnFromFunction();
         }else{
             printer.printReturnFromProcedure();
         }
-
+        symTable.setCurrentScopeName(symTable.GLOBAL);
         return null;
     }
 
@@ -376,11 +394,30 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprG(B314Parser.ExprGContext ctx) {
-        //Todo implement smth to find the address of a var from the current scope and a smth to know the current scope
-        //here, I used our SymbolsTable but it could be usefull to create a new one like in the demo compiler
-        //e.g.   var1[1] is address 0 0   from global
-        //e.g.   var1[1] is address 1 0   from a scope because var1 is not declare in that scope
-        //Todo change all load 0 x par load 1 x si on accède à une var global depuis un scope
+
+        int [] address = symTable.getRelativeAddress(ctx.ID().getText());
+        String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
+        PCodeTypes type= PCodeTypes.Adr;
+        if(typeString.equals("boolean")){
+            type = PCodeTypes.Bool;
+        }else if(typeString.equals("integer")){
+            type = PCodeTypes.Int;
+        }else if(typeString.equals("square")){
+            type = PCodeTypes.Adr;
+        }
+
+        printer.printLoadAdress(type,address[0],address[1]);
+
+        if(ctx.exprEnt().size() != 0) {
+            if (ctx.exprEnt().size() == 2) {
+                IdInfo info = symTable.getIdInfo(ctx.ID().getText());
+                visitExprEnt(ctx.exprEnt(1));
+                printer.printIndexedAdressComputation(info.getDimensionArray()[0]);
+            }
+            visitExprEnt(ctx.exprEnt(0));
+            printer.printIndexedAdressComputation(1);
+        }
+        printer.printIndexedFetch(type);
         return null;
     }
 
