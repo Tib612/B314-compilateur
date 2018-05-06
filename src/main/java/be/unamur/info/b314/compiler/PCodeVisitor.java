@@ -23,7 +23,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     private final int nEnvVars = 99;
     private int totnbVar;
     private int whenCounter = 0;
-
+    private int ifcounter =0;
+    private int whilecounter =0;
 
     public PCodeVisitor(SymbolsTable symTable, PCodePrinter printer) {
         this.symTable = symTable;
@@ -91,20 +92,71 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         if(ctx.action() != null){
             visitAction(ctx.action());
         }else if(ctx.ELSE() != null){
+            printer.printComments("if then else");
+            visitExprBool(ctx.exprBool());
+            printer.printFalseJump("if"+ifcounter);
 
+            for(int i=0;i<ctx.getChildCount();i++) {
+                if(ctx.getChild(i) instanceof B314Parser.InstructionContext) {
+                    visitInstruction((B314Parser.InstructionContext)ctx.getChild(i));
+                }else if(ctx.getChild(i).getText().equals("else")){
+                    printer.printUnconditionalJump("endif"+ifcounter);
+                    printer.printDefineLabel("if"+ifcounter);
+                }
+            }
+            printer.printDefineLabel("endif"+ifcounter);
+
+            ifcounter++;
         }else if(ctx.THEN() != null){
+            printer.printComments("if then");
+            visitExprBool(ctx.exprBool());
+            printer.printFalseJump("endif"+ifcounter);
 
+            for(int i=0;i<ctx.instruction().size();i++) {
+                visitInstruction(ctx.instruction(i));
+            }
+
+            printer.printDefineLabel("endif"+ifcounter);
+            ifcounter++;
         }else if(ctx.WHILE() != null){
+            printer.printComments("while");
+            printer.printDefineLabel("while"+whilecounter);
+            visitExprBool(ctx.exprBool());
+            printer.printFalseJump("endwhile"+whilecounter);
+            for(int i=0;i<ctx.instruction().size();i++) {
+                visitInstruction(ctx.instruction(i));
+            }
+            printer.printUnconditionalJump("while"+whilecounter);
+            printer.printDefineLabel("endwhile"+whilecounter);
 
         }else if(ctx.SET() != null){
 
-        }else if (ctx.COMPUTE() != null){
+            addressExprG(ctx.exprG());
+            visitExprD(ctx.exprD());
 
+            String typeString = symTable.getIdInfo(ctx.exprG().ID().getText()).getDataType();
+            PCodeTypes type= PCodeTypes.Adr;
+            if(typeString.equals("boolean")){
+                type = PCodeTypes.Bool;
+            }else if(typeString.equals("integer")){
+                type = PCodeTypes.Int;
+            }else if(typeString.equals("square")){
+                type = PCodeTypes.Adr;
+            }
+
+            printer.printStore(type);
+
+        }else if (ctx.COMPUTE() != null){
+            visitExprD(ctx.exprD());
+            if(ctx.exprD().ID() != null ){
+                if(! symTable.getGlobalScope().getVar(ctx.exprD().ID().getText()).getDataType().equals("void")) {
+                    printer.printPop();
+                }
+            }
         }else if (ctx.SKIPINS() != null){
             printer.printLoadConstant(PCodeTypes.Int, 0);
             printer.printPrin();
         }
-        //Todo :  instruction
 
         return null;
     }
@@ -434,6 +486,23 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override
     public Void visitExprG(B314Parser.ExprGContext ctx) {
+        addressExprG(ctx);
+
+
+        String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
+        PCodeTypes type= PCodeTypes.Adr;
+        if(typeString.equals("boolean")){
+            type = PCodeTypes.Bool;
+        }else if(typeString.equals("integer")){
+            type = PCodeTypes.Int;
+        }else if(typeString.equals("square")){
+            type = PCodeTypes.Adr;
+        }
+        printer.printIndexedFetch(type);
+        return null;
+    }
+
+    public Void addressExprG(B314Parser.ExprGContext ctx) {
         int [] address = symTable.getRelativeAddress(ctx.ID().getText());
         String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
         PCodeTypes type= PCodeTypes.Adr;
@@ -456,8 +525,6 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprEnt(ctx.exprEnt(0));
             printer.printIndexedAdressComputation(1);
         }
-        printer.printIndexedFetch(type);
         return null;
     }
-
 }
