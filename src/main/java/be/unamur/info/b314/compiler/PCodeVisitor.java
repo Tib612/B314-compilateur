@@ -289,25 +289,31 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(ctx.FALSE() != null) {
             printer.printLoadConstant(PCodeTypes.Bool, 0);
         }else if(ctx.IS() != null){
+            int diff;
+            if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)){
+                diff = 0;
+            }else{
+                diff = 1;
+            }
             if(ctx.ENNEMI() != null){
                 if(ctx.NORTH() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,9);
+                    printer.printLoad(PCodeTypes.Bool,diff,9);
                 }else if(ctx.EAST() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,10);
+                    printer.printLoad(PCodeTypes.Bool,diff,10);
                 }else if(ctx.SOUTH() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,11);
+                    printer.printLoad(PCodeTypes.Bool,diff,11);
                 }else if(ctx.WEST() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,12);
+                    printer.printLoad(PCodeTypes.Bool,diff,12);
                 }
             }else if(ctx.GRAAL() != null){
                 if(ctx.NORTH() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,13);
+                    printer.printLoad(PCodeTypes.Bool,diff,13);
                 }else if(ctx.EAST() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,14);
+                    printer.printLoad(PCodeTypes.Bool,diff,14);
                 }else if(ctx.SOUTH() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,15);
+                    printer.printLoad(PCodeTypes.Bool,diff,15);
                 }else if(ctx.WEST() != null){
-                    printer.printLoad(PCodeTypes.Bool,0,16);
+                    printer.printLoad(PCodeTypes.Bool,diff,16);
                 }
             }
         }else if(ctx.NOT() != null){
@@ -401,7 +407,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     @Override
     public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
         printer.printComments("expr E: "+ctx.getText());
-
+        int diff;
+        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)){
+            diff = 0;
+        }else{
+            diff = 1;
+        }
         if(ctx.INT() != null){
             if(ctx.MINUS() != null){
                 printer.printLoadConstant(PCodeTypes.Int,-1*Integer.valueOf(ctx.INT().getSymbol().getText()));
@@ -409,25 +420,25 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 printer.printLoadConstant(PCodeTypes.Int,Integer.valueOf(ctx.INT().getSymbol().getText()));
             }
         }else if(ctx.LATITUDE() != null){
-            printer.printLoad(PCodeTypes.Int,0,0);
+            printer.printLoad(PCodeTypes.Int,diff,0);
         }else if(ctx.LONGITUDE() != null){
-            printer.printLoad(PCodeTypes.Int,0,1);
+            printer.printLoad(PCodeTypes.Int,diff,1);
         }else if(ctx.GRID() != null){
-            printer.printLoad(PCodeTypes.Int,0,2);
+            printer.printLoad(PCodeTypes.Int,diff,2);
         }else if(ctx.COUNT() != null){
             if(ctx.MAP() != null){
-                printer.printLoad(PCodeTypes.Int,0, 3);
+                printer.printLoad(PCodeTypes.Int,diff, 3);
             }else if(ctx.RADIO() != null){
-                printer.printLoad(PCodeTypes.Int,0, 4);
+                printer.printLoad(PCodeTypes.Int,diff, 4);
             }else if(ctx.AMMO() != null){
-                printer.printLoad(PCodeTypes.Int,0, 5);
+                printer.printLoad(PCodeTypes.Int,diff, 5);
             }else if(ctx.FRUITS() != null){
-                printer.printLoad(PCodeTypes.Int,0, 6);
+                printer.printLoad(PCodeTypes.Int,diff, 6);
             }else if(ctx.SODA() != null){
-                printer.printLoad(PCodeTypes.Int,0, 7);
+                printer.printLoad(PCodeTypes.Int,diff, 7);
             }
         }else if(ctx.LIFE() != null){
-            printer.printLoad(PCodeTypes.Int,0, 8);
+            printer.printLoad(PCodeTypes.Int,diff, 8);
         }else if(ctx.exprEnt().size() == 2){
             visitExprEnt(ctx.exprEnt(0));
             visitExprEnt(ctx.exprEnt(1));
