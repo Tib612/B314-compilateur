@@ -177,7 +177,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }else if(typeString.equals("integer")){
                 type = PCodeTypes.Int;
             }else if(typeString.equals("square")){
-                type = PCodeTypes.Adr;
+                type = PCodeTypes.Int;
             }
 
             printer.printStore(type);
@@ -314,7 +314,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }else if(typeString.equals("integer")){
                 type = PCodeTypes.Int;
             }else if(typeString.equals("square")){
-                type = PCodeTypes.Adr;
+                type = PCodeTypes.Int;
             }
 
             printer.printLoadAdress(type,0,0);
@@ -577,7 +577,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(typeString.equals("integer")){
             type = PCodeTypes.Int;
         }else if(typeString.equals("square")){
-            type = PCodeTypes.Adr;
+            type = PCodeTypes.Int;
         }
         printer.printIndexedFetch(type);
         return null;
