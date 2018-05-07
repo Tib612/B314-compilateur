@@ -25,6 +25,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     private int whenCounter = 0;
     private int ifcounter =0;
     private int whilecounter =0;
+    private int printFlagAddress;
 
     public PCodeVisitor(SymbolsTable symTable, PCodePrinter printer) {
         this.symTable = symTable;
@@ -35,8 +36,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
         symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         printer.printComments("Start program: "+ctx.getText());
-        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId() - 1;
-        printer.printSetStackPointer(totnbVar);
+        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId()-1;
+        printer.printSetStackPointer(totnbVar+1);
         initEnvironmentVariables();
         initGlobalVar();
         printer.printUnconditionalJump("begin");
@@ -52,6 +53,14 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }
         visitClauseDefault(ctx.clauseDefault());
         printer.printComments("End program");
+        printer.printComments("check if output done");
+        printer.printLoad(PCodeTypes.Bool,0,printFlagAddress);
+        printer.printFalseJump("endProg");
+
+        printer.printLoadConstant(PCodeTypes.Int,0);
+        printer.printPrin();
+
+        printer.printDefineLabel("endProg");
         printer.printStop();
         return null;
     }
@@ -84,12 +93,16 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     private void initGlobalVar(){
         printer.printComments("Initialize Global Variables");
-
-        for (int i = nEnvVars; i < totnbVar; i++) {
+        int i;
+        for (i = nEnvVars; i < totnbVar; i++) {
             printer.printLoadAdress(PCodeTypes.Int, 0, i);
             printer.printRead();
             printer.printStore(PCodeTypes.Int);
         }
+        printer.printLoadAdress(PCodeTypes.Bool, 0, i);
+        printer.printLoadConstant(PCodeTypes.Bool,1);
+        printer.printStore(PCodeTypes.Bool);
+        printFlagAddress = i;
     }
 
     @Override
@@ -161,7 +174,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }
         }else if (ctx.SKIPINS() != null){
             printer.printLoadConstant(PCodeTypes.Int, 0);
-            printer.printPrin();
+            printPrinAndModify();
         }else {
             printer.printComments("strange");
         }
@@ -207,8 +220,19 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else {
             printer.printComments("strange");
         }
-        printer.printPrin();
+        printPrinAndModify();
         return null;
+    }
+
+    private void printPrinAndModify(){
+        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)){
+            printer.printLoadAdress(PCodeTypes.Bool,0,printFlagAddress);
+        }else{
+            printer.printLoadAdress(PCodeTypes.Bool,1,printFlagAddress);
+        }
+        printer.printLoadConstant(PCodeTypes.Bool,0);
+        printer.printStore(PCodeTypes.Bool);
+        printer.printPrin();
     }
 
     @Override
