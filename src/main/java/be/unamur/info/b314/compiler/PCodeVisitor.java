@@ -23,7 +23,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     private final int nEnvVars = 99;
     private int totnbVar;
     private int whenCounter = 0;
-    private int ifcounter =0;
+    private int ifcounter = 0;
     private int whilecounter =0;
     private int printFlagAddress;
 
@@ -34,12 +34,18 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     @Override 
     public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
+
+        //print ssp and init variables
+
         symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         printer.printComments("Start program: "+ctx.getText());
         totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId()-1;
         printer.printSetStackPointer(totnbVar+1);
         initEnvironmentVariables();
         initGlobalVar();
+
+        //print program content
+
         printer.printUnconditionalJump("begin");
         for(int i=0;i<ctx.fctDecl().size();i++){
             visitFctDecl(ctx.fctDecl(i));
@@ -52,6 +58,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitClauseWhen(ctx.clauseWhen(i));
         }
         visitClauseDefault(ctx.clauseDefault());
+
+        //print program end and check if output is required
+
         printer.printComments("End program");
         printer.printComments("check if output done");
         printer.printLoad(PCodeTypes.Bool,0,printFlagAddress);
@@ -93,23 +102,19 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     }
 
+    /**
+     * Initialize Global Variables
+     * An extra boolean variable is declare. It is used to make sure an output (prin) has been done.
+     */
     private void initGlobalVar(){
         printer.printComments("Initialize Global Variables");
         int i;
         for (i = nEnvVars; i < totnbVar; i++) {
-            String typeString = symTable.getGlobalScope().getTypeByAddressPCode(i-nEnvVars);
-            PCodeTypes type = PCodeTypes.Bool;
-            if(typeString.equals("boolean")){
-                type = PCodeTypes.Bool;
-            }else if(typeString.equals("integer")){
-                type = PCodeTypes.Int;
-            }else if(typeString.equals("square")){
-                type = PCodeTypes.Int;
-            }
+
+            PCodeTypes type = stringToPCodeType(symTable.getGlobalScope().getTypeByAddressPCode(i-nEnvVars));
             printer.printLoadAdress(type, 0, i);
             printer.printRead();
-
-            if(typeString.equals("boolean")){
+            if(type.name().equals("Bool")){
                 printer.printLoadConstant(PCodeTypes.Int,1);
                 printer.printEqualsValues(PCodeTypes.Int);
             }
@@ -127,31 +132,22 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printComments("instruction "+ctx.getText());
         if(ctx.action() != null){
             visitAction(ctx.action());
-        }else if(ctx.ELSE() != null){
-            printer.printComments("if then else");
+        }else if(ctx.THEN() != null){
+            printer.printComments("if then (else)");
             visitExprBool(ctx.exprBool());
-            printer.printFalseJump("if"+ifcounter);
+            printer.printFalseJump("else"+ifcounter);
 
             for(int i=0;i<ctx.getChildCount();i++) {
                 if(ctx.getChild(i) instanceof B314Parser.InstructionContext) {
                     visitInstruction((B314Parser.InstructionContext)ctx.getChild(i));
                 }else if(ctx.getChild(i).getText().equals("else")){
                     printer.printUnconditionalJump("endif"+ifcounter);
-                    printer.printDefineLabel("if"+ifcounter);
+                    printer.printDefineLabel("else"+ifcounter);
                 }
             }
-            printer.printDefineLabel("endif"+ifcounter);
-
-            ifcounter++;
-        }else if(ctx.THEN() != null){
-            printer.printComments("if then");
-            visitExprBool(ctx.exprBool());
-            printer.printFalseJump("endif"+ifcounter);
-
-            for(int i=0;i<ctx.instruction().size();i++) {
-                visitInstruction(ctx.instruction(i));
+            if(ctx.ELSE() == null){
+                printer.printDefineLabel("else"+ifcounter);
             }
-
             printer.printDefineLabel("endif"+ifcounter);
             ifcounter++;
         }else if(ctx.WHILE() != null){
@@ -164,21 +160,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }
             printer.printUnconditionalJump("while"+whilecounter);
             printer.printDefineLabel("endwhile"+whilecounter);
-
         }else if(ctx.SET() != null){
 
             addressExprG(ctx.exprG());
             visitExprD(ctx.exprD());
 
-            String typeString = symTable.getIdInfo(ctx.exprG().ID().getText()).getDataType();
-            PCodeTypes type= PCodeTypes.Adr;
-            if(typeString.equals("boolean")){
-                type = PCodeTypes.Bool;
-            }else if(typeString.equals("integer")){
-                type = PCodeTypes.Int;
-            }else if(typeString.equals("square")){
-                type = PCodeTypes.Int;
-            }
+            PCodeTypes type= stringToPCodeType(symTable.getIdInfo(ctx.exprG().ID().getText()).getDataType());
 
             printer.printStore(type);
 
@@ -241,8 +228,14 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         return null;
     }
 
+    /**
+     *     use a flag to know if anything has been printed at the end of the program
+     *     if nothing was printed during the excecution, "0" is printed.
+     *     that second part is in "visit program"
+     */
+
     private void printPrinAndModify(){
-        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)){
+        if(symTable.currentScopeIsGlobal()){
             printer.printLoadAdress(PCodeTypes.Bool,0,printFlagAddress);
         }else{
             printer.printLoadAdress(PCodeTypes.Bool,1,printFlagAddress);
@@ -307,15 +300,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }
 
         if(ctx.exprD() != null){
-            String typeString = ctx.scalar().getText();
-            PCodeTypes type= PCodeTypes.Adr;
-            if(typeString.equals("boolean")){
-                type = PCodeTypes.Bool;
-            }else if(typeString.equals("integer")){
-                type = PCodeTypes.Int;
-            }else if(typeString.equals("square")){
-                type = PCodeTypes.Int;
-            }
+            PCodeTypes type= stringToPCodeType(ctx.scalar().getText());
 
             printer.printLoadAdress(type,0,0);
             visitExprD(ctx.exprD());
@@ -337,7 +322,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             printer.printLoadConstant(PCodeTypes.Bool, 0);
         }else if(ctx.IS() != null){
             int diff;
-            if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)){
+            if(symTable.currentScopeIsGlobal()){
                 diff = 0;
             }else{
                 diff = 1;
@@ -416,7 +401,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     public void visitFctCall(String id, List<B314Parser.ExprDContext> ls){
         printer.printComments("function call: "+id);
-        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)) {
+        if(symTable.currentScopeIsGlobal()) {
             printer.printMarkStack(0);
         }else{
             printer.printMarkStack(1);
@@ -455,7 +440,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitExprEnt(B314Parser.ExprEntContext ctx) {
         printer.printComments("expr E: "+ctx.getText());
         int diff;
-        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)){
+        if(symTable.currentScopeIsGlobal()){
             diff = 0;
         }else{
             diff = 1;
@@ -521,7 +506,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(ctx.ID() != null) {
             visitFctCall(ctx.ID().getText(), ctx.exprD());
         }else if(ctx.NEARBY() != null){
-            if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL))
+            if(symTable.currentScopeIsGlobal())
                 printer.printLoadAdress(PCodeTypes.Int,0,17);
             else
                 printer.printLoadAdress(PCodeTypes.Int,1,17);
@@ -570,25 +555,19 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         addressExprG(ctx);
 
 
-        String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
-        PCodeTypes type= PCodeTypes.Adr;
-        if(typeString.equals("boolean")){
-            type = PCodeTypes.Bool;
-        }else if(typeString.equals("integer")){
-            type = PCodeTypes.Int;
-        }else if(typeString.equals("square")){
-            type = PCodeTypes.Int;
-        }
+        PCodeTypes type= stringToPCodeType(symTable.getIdInfo(ctx.ID().getText()).getDataType());
         printer.printIndexedFetch(type);
         return null;
     }
 
-    public Void addressExprG(B314Parser.ExprGContext ctx) {
-        printer.printComments("expr G address: "+ctx.getText());
+    /**
+     * transform a string storing the type of a variable from the format we use in our symbols table to the PCodeTypes type
+     * @param typeString
+     * @return
+     */
+    private PCodeTypes stringToPCodeType(String typeString){
 
-        int [] address = symTable.getRelativeAddress(ctx.ID().getText());
-        String typeString = symTable.getIdInfo(ctx.ID().getText()).getDataType();
-        PCodeTypes type= PCodeTypes.Adr;
+        PCodeTypes type= null;
         if(typeString.equals("boolean")){
             type = PCodeTypes.Bool;
         }else if(typeString.equals("integer")){
@@ -596,14 +575,30 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(typeString.equals("square")){
             type = PCodeTypes.Int;
         }
+        return type;
+    }
 
-        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)) {
-            printer.printLoadAdress(type, address[0], address[1]);
+    /**
+     * print the address of a variable in PCode
+     * @param ctx
+     * @return
+     */
+    public Void addressExprG(B314Parser.ExprGContext ctx) {
+        printer.printComments("expr G address: "+ctx.getText());
+
+        //address id format   [ diff , offset ]
+        int [] address = symTable.getRelativeAddress(ctx.ID().getText());
+
+        PCodeTypes type= stringToPCodeType(symTable.getIdInfo(ctx.ID().getText()).getDataType());
+
+
+        if(symTable.currentScopeIsGlobal()) {
+            printer.printLoadAdress(type, 0, address[1]);
         }else{
             if(address[0] == 1){
-                printer.printLoadAdress(type, address[0], address[1]+99);
+                printer.printLoadAdress(type, 1 , address[1]+99);
             }else{
-                printer.printLoadAdress(type, address[0], address[1]+5);
+                printer.printLoadAdress(type, 0 , address[1]+5);
             }
         }
 

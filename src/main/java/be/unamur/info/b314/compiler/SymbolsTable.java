@@ -138,4 +138,8 @@ public class SymbolsTable {
             entry.getValue().printScope();
         }
     }
+
+    public boolean currentScopeIsGlobal(){
+        return currentScopeName.equals(GLOBAL);
+    }
 }
