@@ -95,9 +95,18 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printComments("Initialize Global Variables");
         int i;
         for (i = nEnvVars; i < totnbVar; i++) {
-            printer.printLoadAdress(PCodeTypes.Int, 0, i);
+            String typeString = symTable.getGlobalScope().getTypeByAddressPCode(i-nEnvVars);
+            PCodeTypes type = PCodeTypes.Bool;
+            if(typeString.equals("boolean")){
+                type = PCodeTypes.Bool;
+            }else if(typeString.equals("integer")){
+                type = PCodeTypes.Int;
+            }else if(typeString.equals("square")){
+                type = PCodeTypes.Int;
+            }
+            printer.printLoadAdress(type, 0, i);
             printer.printRead();
-            printer.printStore(PCodeTypes.Int);
+            printer.printStore(type);
         }
         printer.printLoadAdress(PCodeTypes.Bool, 0, i);
         printer.printLoadConstant(PCodeTypes.Bool,1);
@@ -577,7 +586,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(typeString.equals("integer")){
             type = PCodeTypes.Int;
         }else if(typeString.equals("square")){
-            type = PCodeTypes.Adr;
+            type = PCodeTypes.Int;
         }
 
         if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)) {

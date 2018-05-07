@@ -69,6 +69,16 @@ public class Scope {
         return scopeMaxId;
     }
 
+    public String getTypeByAddressPCode(int address){
+        for (Map.Entry<String, IdInfo> subEntry : scope.entrySet()) {
+            IdInfo info = subEntry.getValue();
+            if(info.getAddressPCode() == address){
+                return info.getDataType();
+            }
+        }
+        return "";
+    }
+
     public void printScope() {
 
         for (Map.Entry<String, IdInfo> subEntry : scope.entrySet()) {

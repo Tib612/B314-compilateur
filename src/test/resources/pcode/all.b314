@@ -7,7 +7,7 @@
 0,0,0,0,0
 */
 declare and retain
-
+ b as boolean;
 when your turn
 by default
     do
