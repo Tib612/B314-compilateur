@@ -35,7 +35,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitProgramme(B314Parser.ProgrammeContext ctx) {
         symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         printer.printComments("Start program: "+ctx.getText());
-        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId();
+        totnbVar = nEnvVars + 1 + symTable.getGlobalScope().getScopeMaxId() - 1;
         printer.printSetStackPointer(totnbVar);
         initEnvironmentVariables();
         initGlobalVar();
@@ -363,7 +363,11 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     public void visitFctCall(String id, List<B314Parser.ExprDContext> ls){
         printer.printComments("function call: "+id);
-        printer.printMarkStack(0);
+        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)) {
+            printer.printMarkStack(0);
+        }else{
+            printer.printMarkStack(1);
+        }
         //load all arguments in top of stack
         for(int i=0;i<ls.size();i++){
             visitExprD(ls.get(i));
@@ -535,7 +539,15 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             type = PCodeTypes.Adr;
         }
 
-        printer.printLoadAdress(type,address[0],address[1]);
+        if(symTable.getCurrentScope().getName().equals(symTable.GLOBAL)) {
+            printer.printLoadAdress(type, address[0], address[1]);
+        }else{
+            if(address[0] == 1){
+                printer.printLoadAdress(type, address[0], address[1]+99);
+            }else{
+                printer.printLoadAdress(type, address[0], address[1]+5);
+            }
+        }
 
         if(ctx.exprEnt().size() != 0) {
             if (ctx.exprEnt().size() == 2) {
