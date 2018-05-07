@@ -106,6 +106,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }
             printer.printLoadAdress(type, 0, i);
             printer.printRead();
+
+            if(typeString.equals("boolean")){
+                printer.printLoadConstant(PCodeTypes.Int,1);
+                printer.printEqualsValues(PCodeTypes.Int);
+            }
+
             printer.printStore(type);
         }
         printer.printLoadAdress(PCodeTypes.Bool, 0, i);
