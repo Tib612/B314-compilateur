@@ -69,9 +69,15 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         printer.printComments("Initialize Environment Variables");
 
         for (int i = 0; i < nEnvVars; i++) {
-            printer.printLoadAdress(PCodeTypes.Int, 0, i);
-            printer.printRead();
-            printer.printStore(PCodeTypes.Int);
+            if(i >= 9 && i <= 16){
+                printer.printLoadAdress(PCodeTypes.Bool, 0, i);
+                printer.printRead();
+                printer.printStore(PCodeTypes.Bool);
+            }else {
+                printer.printLoadAdress(PCodeTypes.Int, 0, i);
+                printer.printRead();
+                printer.printStore(PCodeTypes.Int);
+            }
         }
 
     }

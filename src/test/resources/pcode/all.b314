@@ -7,23 +7,56 @@
 0,0,0,0,0
 */
 declare and retain
-    f as integer;
-	facto as function():integer
-    	do
-    		skip
-    	 return facto2()
-    	done
-    facto2 as function():integer
-       	do
-       		skip
-       	 return i3
-       	done
-    i3 as integer;
+    b as boolean;
+    i as integer;
+    s as square;
 when your turn
 by default
     do
-    	set i3 to 10
-    	set f to facto()
-
-    	next do nothing
+        if false then
+        	next move west
+        done
+        if ennemi is north then
+        	next move west
+        done
+        if ennemi is east then
+        	next move west
+        done
+        if ennemi is west then
+        	next move west
+        done
+        if ennemi is south then
+        	next move west
+        done
+        if graal is north then
+        	next move west
+        done
+        if graal is north then
+        	next move west
+        done
+        if graal is north then
+        	next move west
+        done
+        if graal is north then
+        	next move west
+        done
+		if not true then
+        	next move west
+        done
+        if true and false then
+        	next move west
+        done
+        if not (true or false) then
+        	next move west
+        done
+        if 42 < (-2) then
+        	next move west
+        done
+        if -5 > 42 then
+        	next move west
+        done
+        if -5 = 42 then
+        	next move west
+        done
+        next do nothing
     done
