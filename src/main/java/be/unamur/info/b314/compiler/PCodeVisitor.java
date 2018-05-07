@@ -565,9 +565,11 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
      * @param typeString
      * @return
      */
+
+    private  PCodeTypes previous = null;
     private PCodeTypes stringToPCodeType(String typeString){
 
-        PCodeTypes type= null;
+        PCodeTypes type= previous;
         if(typeString.equals("boolean")){
             type = PCodeTypes.Bool;
         }else if(typeString.equals("integer")){
@@ -575,6 +577,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(typeString.equals("square")){
             type = PCodeTypes.Int;
         }
+        previous = type;
         return type;
     }
 
