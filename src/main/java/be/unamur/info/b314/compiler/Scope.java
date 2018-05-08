@@ -103,8 +103,6 @@ class IdInfo {
         addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        // dimension = null
-
         this.argsTypes = argsTypes;
     }
 
@@ -114,10 +112,6 @@ class IdInfo {
         this.idType = idType;
         this.dataType = dataType;
         this.dimension = dimension;
-      
-
-        // argsTypes is null
-        // this.argsTypes = new ArrayList<>();
     }
 
     public String getIdType() {
@@ -129,7 +123,7 @@ class IdInfo {
     }
 
     public int getDimension() {
-        return dimension.length;
+        return dimension == null ? 0 : dimension.length;
     }
 
     public int[] getDimensionArray() {
@@ -150,17 +144,21 @@ class IdInfo {
     }
 
     public String getDimensionInfo() {
-        if(dimension.length == 0){
+        if(dimension == null){
             return "/";
-        }else if(dimension.length == 1){
+        }
+        if(dimension.length == 1){
             return "[ "+ dimension[0] +" ]";
-        }else if(dimension.length == 2){
+        }
+        if(dimension.length == 2){
             return "[ "+ dimension[0] + " , " + dimension[1] +" ]";
         }
-        return "";
+        return "There might be an error!";
     }
 
-    public int getNbArg() {return argsTypes.size();}
+    public int getNbArg() {
+        return argsTypes == null ? 0 : argsTypes.size();
+    }
 
     public ArrayList<String> getArgsTypes() {
         return argsTypes;
