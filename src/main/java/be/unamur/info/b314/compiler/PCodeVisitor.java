@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PCodeVisitor extends B314BaseVisitor<Object> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(B314VisitorImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PCodeVisitor.class);
 
     private final SymbolsTable symTable;
 
@@ -23,6 +23,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     private final int nEnvVars = 99;
     private int totnbVar;
     private int defineCounter = 0;
+    private int whenCounter = 0;
     private int printFlagAddress;
 
     public PCodeVisitor(SymbolsTable symTable, PCodePrinter printer) {
@@ -269,21 +270,21 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx){
         printer.printComments("when "+ctx.getText());
         visitExprBool(ctx.exprBool());
-        symTable.setCurrentScopeName("_when"+defineCounter);
-        printer.printFalseJump("_when"+defineCounter);
+        symTable.setCurrentScopeName("_when"+whenCounter);
+        printer.printFalseJump("_when"+whenCounter);
         printer.printMarkStack(0);
-        printer.printCallUserProcedure(0,"_when"+defineCounter+"start");
-        printer.printUnconditionalJump("_when"+defineCounter);
-        printer.printDefineLabel("_when"+defineCounter+"start");
-        printer.printSetStackPointer(5+symTable.getScope("_when"+defineCounter).getScopeMaxId());
+        printer.printCallUserProcedure(0,"_when"+whenCounter+"start");
+        printer.printUnconditionalJump("_when"+whenCounter);
+        printer.printDefineLabel("_when"+whenCounter+"start");
+        printer.printSetStackPointer(5+symTable.getScope("_when"+whenCounter).getScopeMaxId());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
         }
 
         printer.printReturnFromProcedure();
-        printer.printDefineLabel("_when"+defineCounter);
-        defineCounter++;
+        printer.printDefineLabel("_when"+whenCounter);
+        whenCounter++;
         symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         return null;
     }
