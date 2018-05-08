@@ -22,9 +22,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     private final PCodePrinter printer;
     private final int nEnvVars = 99;
     private int totnbVar;
-    private int whenCounter = 0;
-    private int ifcounter = 0;
-    private int whilecounter =0;
+    private int defineCounter = 0;
     private int printFlagAddress;
 
     public PCodeVisitor(SymbolsTable symTable, PCodePrinter printer) {
@@ -137,31 +135,31 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(ctx.THEN() != null){
             printer.printComments("if then (else)");
             visitExprBool(ctx.exprBool());
-            printer.printFalseJump("else"+ifcounter);
+            printer.printFalseJump("else"+defineCounter);
 
             for(int i=0;i<ctx.getChildCount();i++) {
                 if(ctx.getChild(i) instanceof B314Parser.InstructionContext) {
                     visitInstruction((B314Parser.InstructionContext)ctx.getChild(i));
                 }else if(ctx.getChild(i).getText().equals("else")){
-                    printer.printUnconditionalJump("endif"+ifcounter);
-                    printer.printDefineLabel("else"+ifcounter);
+                    printer.printUnconditionalJump("endif"+defineCounter);
+                    printer.printDefineLabel("else"+defineCounter);
                 }
             }
             if(ctx.ELSE() == null){
-                printer.printDefineLabel("else"+ifcounter);
+                printer.printDefineLabel("else"+defineCounter);
             }
-            printer.printDefineLabel("endif"+ifcounter);
-            ifcounter++;
+            printer.printDefineLabel("endif"+defineCounter);
+            defineCounter++;
         }else if(ctx.WHILE() != null){
             printer.printComments("while");
-            printer.printDefineLabel("while"+whilecounter);
+            printer.printDefineLabel("while"+defineCounter);
             visitExprBool(ctx.exprBool());
-            printer.printFalseJump("endwhile"+whilecounter);
+            printer.printFalseJump("endwhile"+defineCounter);
             for(int i=0;i<ctx.instruction().size();i++) {
                 visitInstruction(ctx.instruction(i));
             }
-            printer.printUnconditionalJump("while"+whilecounter);
-            printer.printDefineLabel("endwhile"+whilecounter);
+            printer.printUnconditionalJump("while"+defineCounter);
+            printer.printDefineLabel("endwhile"+defineCounter);
         }else if(ctx.SET() != null){
 
             addressExprG(ctx.exprG());
@@ -271,21 +269,21 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx){
         printer.printComments("when "+ctx.getText());
         visitExprBool(ctx.exprBool());
-        symTable.setCurrentScopeName("_when"+whenCounter);
-        printer.printFalseJump("_when"+whenCounter);
+        symTable.setCurrentScopeName("_when"+defineCounter);
+        printer.printFalseJump("_when"+defineCounter);
         printer.printMarkStack(0);
-        printer.printCallUserProcedure(0,"_when"+whenCounter+"start");
-        printer.printUnconditionalJump("_when"+whenCounter);
-        printer.printDefineLabel("_when"+whenCounter+"start");
-        printer.printSetStackPointer(5+symTable.getScope("_when"+whenCounter).getScopeMaxId());
+        printer.printCallUserProcedure(0,"_when"+defineCounter+"start");
+        printer.printUnconditionalJump("_when"+defineCounter);
+        printer.printDefineLabel("_when"+defineCounter+"start");
+        printer.printSetStackPointer(5+symTable.getScope("_when"+defineCounter).getScopeMaxId());
 
         for(int i=0;i<ctx.instruction().size();i++) {
             visitInstruction(ctx.instruction(i));
         }
 
         printer.printReturnFromProcedure();
-        printer.printDefineLabel("_when"+whenCounter);
-        whenCounter++;
+        printer.printDefineLabel("_when"+defineCounter);
+        defineCounter++;
         symTable.setCurrentScopeName(SymbolsTable.GLOBAL);
         return null;
     }
@@ -568,10 +566,10 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
      * @return
      */
 
-    private  PCodeTypes previous = null;
+    //private  PCodeTypes previous = null;
     private PCodeTypes stringToPCodeType(String typeString){
 
-        PCodeTypes type= previous;
+        PCodeTypes type =  PCodeTypes.Int;//= previous;
         if(typeString.equals("boolean")){
             type = PCodeTypes.Bool;
         }else if(typeString.equals("integer")){
@@ -579,7 +577,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(typeString.equals("square")){
             type = PCodeTypes.Int;
         }
-        previous = type;
+        //previous = type;
         return type;
     }
 
