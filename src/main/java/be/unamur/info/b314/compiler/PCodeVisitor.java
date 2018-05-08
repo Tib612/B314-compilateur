@@ -115,11 +115,11 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 PCodeTypes type = stringToPCodeType(x.getDataType());
                 printer.printLoadAdress(type, 0, currentAddress++);
                 // printer.printRead();
-                if(type.name().equals("Bool")){
-                    printer.printLoadConstant(PCodeTypes.Int,1);
-                    printer.printEqualsValues(PCodeTypes.Int);
-                }
-                printer.printStore(type);
+                // if(type.name().equals("Bool")){
+                    // printer.printLoadConstant(PCodeTypes.Int,1);
+                    // printer.printEqualsValues(PCodeTypes.Int);
+                // }
+                // printer.printStore(type);
             }
         }
         printFlagAddress = currentAddress;
