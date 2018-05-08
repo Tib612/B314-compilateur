@@ -103,7 +103,7 @@ class IdInfo {
         addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        // dimension = null
+        dimension = new int[0];
 
         this.argsTypes = argsTypes;
     }
@@ -114,10 +114,7 @@ class IdInfo {
         this.idType = idType;
         this.dataType = dataType;
         this.dimension = dimension;
-      
-
-        // argsTypes is null
-        // this.argsTypes = new ArrayList<>();
+        this.argsTypes = new ArrayList<>();
     }
 
     public String getIdType() {
