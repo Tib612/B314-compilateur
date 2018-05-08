@@ -111,7 +111,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         //for each var in Global scope
         for (IdInfo x:symTable.getGlobalScope().getIdInfoOrderedByAddressPCode()) {
             //init a number of var in PCode equals to the size required by the var (e.g. array[3,2] = 6 var to init
-            for (int i = 0; i < x.getsize(); i++) {
+            for (int i = 0; i < x.getSize(); i++) {
                 PCodeTypes type = stringToPCodeType(x.getDataType());
                 printer.printLoadAdress(type, 0, currentAddress++);
                 // printer.printRead();

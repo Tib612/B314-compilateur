@@ -103,7 +103,7 @@ class IdInfo {
         addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        dimension = new int[0];
+        // dimension = null
 
         this.argsTypes = argsTypes;
     }
@@ -114,7 +114,10 @@ class IdInfo {
         this.idType = idType;
         this.dataType = dataType;
         this.dimension = dimension;
-        this.argsTypes = new ArrayList<>();
+      
+
+        // argsTypes is null
+        // this.argsTypes = new ArrayList<>();
     }
 
     public String getIdType() {
@@ -138,17 +141,12 @@ class IdInfo {
     }
 
     public int getNextAddress(){
-        return addressPCode + getsize();
+        return addressPCode + getSize();
     }
 
-    public int getsize(){
-        if(dimension.length == 0){
-            return 1;
-        }else if(dimension.length == 1){
-            return dimension[0];
-        }else{
-            return dimension[0]*dimension[1];
-        }
+    public int getSize(){
+        if (dimension == null) return 1;
+        return dimension.length == 1 ? dimension[0] : dimension[0]*dimension[1];
     }
 
     public String getDimensionInfo() {
