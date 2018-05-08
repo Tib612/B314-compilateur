@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.RuleNode;
 import be.unamur.info.b314.compiler.exception.*;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 
@@ -117,9 +116,9 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
         if (ctx.VOID().size() == 0) {
             String typeFct = ctx.scalar().getText();
-            symTable.getScope("_global").put(nomFct, "fct", typeFct, 0,0, argsTypes);
+            symTable.getScope(SymbolsTable.GLOBAL).putFunc(nomFct, typeFct, argsTypes);
         } else if (ctx.VOID().size() == 2) {
-            symTable.getScope("_global").put(nomFct, "fct", "void", 0,0, argsTypes);
+            symTable.getScope(SymbolsTable.GLOBAL).putFunc(nomFct, "void", argsTypes);
         } else {
             symTable.printSymbolsTable();
             throw new TypeMismatchException("The return type of the function is not void");
@@ -169,56 +168,45 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             throw new VariableAlreadyDefinedException(
                     "Error at " + ctxText + ": this name is the same as the function the variable is declared in!");
         }
-        String typeStr ;
-        int dimension = 0;
+
         if (type instanceof B314Parser.ScalarContext) {
-            typeStr = type.getText();
+            String typeStr = type.getText();
             if (id.equals("arena")) {
                 throw new ArenaDeclarationException(
-                        "Error at " + ctxText + ": Arena is not an array!");
+                        "Error at " + ctxText + ": Arena must be a two-dimensional array!");
             }
 
             LOG.debug("A scalar variable declared: " + typeStr + " " + id + " in scope: " + scopeName);
+            
+            symTable.getScope(scopeName).putVar(id, typeStr, null);
 
         } else {
             B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
 
-            typeStr = arrType.scalar().getText();
-            dimension = arrType.INT().size();
+            String typeStr = arrType.scalar().getText();
+            int dimension = arrType.INT().size();
+            int[] dimSizes = new int[dimension];
+            for (int i = 0; i < dimension; i++) {
+                dimSizes[i] = Integer.valueOf(arrType.INT(i).getText());
 
-            // check negative array size
-            if (Integer.parseInt(arrType.INT(0).getText()) < 0
-                    || (dimension == 2 && Integer.parseInt(arrType.INT(1).getText()) < 0)) {
-
-                throw new NegativeArraySizeException(
-                        ctxText + " Array size must be positive!");
+                // check negative array size    
+                if (dimSizes[i] < 0) {
+                    throw new NegativeArraySizeException(
+                        "Error at " + ctxText + " Array size must be positive!");    
+                }
             }
 
-            if (id.equals("arena")
-                    &&
-                    (dimension != 2
-                            || Integer.parseInt(arrType.INT(0).getText()) != Integer.parseInt(arrType.INT(1).getText())
-                            || !typeStr.equals("square")
-                            || !scopeName.equals(SymbolsTable.GLOBAL)
-                    )) {
-
-                throw new ArenaDeclarationException(
-                        "Error at " + ctxText + ": Arena error!");
+            
+            if (id.equals("arena") 
+                && (dimension != 2 || dimSizes[0] != dimSizes[1] 
+                    || !typeStr.equals("square") || !scopeName.equals(SymbolsTable.GLOBAL))
+            ) {
+                throw new ArenaDeclarationException("Error at " + ctxText + ": Arena error!");
             }
 
             LOG.debug("A " + dimension + "D array of type " + typeStr + " was declared and named " + id);
-        }
-        if(dimension == 0) {
-            symTable.getScope(scopeName).put( id, "var", typeStr,0,0);
-        }else if(dimension == 1) {
-            B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
-            int dim1 = Integer.valueOf(arrType.INT(0).getSymbol().getText());
-            symTable.getScope(scopeName).put( id, "var", typeStr,dim1,0);
-        }else if(dimension == 2) {
-            B314Parser.ArrayContext arrType = (B314Parser.ArrayContext) type;
-            int dim1 = Integer.valueOf(arrType.INT(0).getSymbol().getText());
-            int dim2 = Integer.valueOf(arrType.INT(1).getSymbol().getText());
-            symTable.getScope(scopeName).put( id, "var", typeStr,dim1,dim2);
+
+            symTable.getScope(scopeName).putVar(id, typeStr, dimSizes);
         }
     }
 

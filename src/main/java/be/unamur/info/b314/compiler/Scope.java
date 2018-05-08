@@ -13,6 +13,8 @@ public class Scope {
     private String name;
     private HashMap<String, IdInfo> scope;
     private int scopeMaxId = 0;
+    private final String FUNC_TYPE = "fct";
+    private final String VAR_TYPE = "var";
 
     public Scope(String fctName) {
         name = fctName;
@@ -27,31 +29,16 @@ public class Scope {
         return scope.containsKey(id);
     }
 
-    public void put(String name, String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
-        scope.put(name, new IdInfo(scopeMaxId,idType,dataType,dimension1,dimension2,argsTypes));
-        if(!idType.equals("fct")) {
-            if (dimension1 == 0) {
-                scopeMaxId++;
-            } else {
-                if (dimension2 == 0) {
-                    scopeMaxId += dimension1;
-                } else {
-                    scopeMaxId += dimension1 * dimension2;
-                }
-            }
-        }
+    public void putFunc(String name, String funcDataType, ArrayList<String> argsTypes) {
+        scope.put(name, new IdInfo(scopeMaxId, FUNC_TYPE, funcDataType, argsTypes));
     }
 
-    public void put(String name, String idType, String dataType, int dimension1, int dimension2) {
-        scope.put(name, new IdInfo(scopeMaxId,idType,dataType,dimension1,dimension2));
-        if(dimension1 == 0){
+    public void putVar(String name, String varDataType, int[] dimension) {
+        scope.put(name, new IdInfo(scopeMaxId, VAR_TYPE, varDataType, dimension));
+        if (dimension == null || dimension.length == 0) {
             scopeMaxId++;
-        }else{
-            if(dimension2 == 0){
-                scopeMaxId += dimension1;
-            }else{
-                scopeMaxId += dimension1 * dimension2;
-            }
+        } else {
+            scopeMaxId += (dimension.length == 1) ? dimension[0] : dimension[0]*dimension[1];
         }
     }
 
@@ -102,7 +89,7 @@ public class Scope {
  * @specfield dataType data type of the identifiant. If the identifiant is a
  * function name, dataType represents return type of the function
  * @specfield dimension for an array-type variable, this field represents its number of dimensions.
- * for scalar-type variable and function, dimension = 0.
+ * for scalar-type variable and function, dimension = null.
  */
 class IdInfo {
 
@@ -112,41 +99,25 @@ class IdInfo {
     private ArrayList<String> argsTypes;
     private int addressPCode;
 
-    public IdInfo(int id, String idType, String dataType, int dimension1, int dimension2, ArrayList<String> argsTypes) {
+    public IdInfo(int id, String idType, String dataType, ArrayList<String> argsTypes) {
         addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        if(dimension1 == 0){
-            this.dimension = new int[0];
-        }else{
-            if(dimension2 == 0){
-                this.dimension = new int[1];
-            }else{
-                this.dimension = new int[2];
-                this.dimension[1] = dimension2;
-            }
-            this.dimension[0] = dimension1;
-        }
+        // dimension = null
+
         this.argsTypes = argsTypes;
     }
 
 
-    public IdInfo(int id,String idType, String dataType, int dimension1, int dimension2) {
+    public IdInfo(int id,String idType, String dataType, int[] dimension) {
         addressPCode = id;
         this.idType = idType;
         this.dataType = dataType;
-        if(dimension1 == 0){
-            this.dimension = new int[0];
-        }else{
-            if(dimension2 == 0){
-                this.dimension = new int[1];
-            }else{
-                this.dimension = new int[2];
-                this.dimension[1] = dimension2;
-            }
-            this.dimension[0] = dimension1;
-        }
-        this.argsTypes = new ArrayList<>();
+        this.dimension = dimension;
+      
+
+        // argsTypes is null
+        // this.argsTypes = new ArrayList<>();
     }
 
     public String getIdType() {
