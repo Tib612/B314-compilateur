@@ -107,6 +107,10 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
      * An extra boolean variable is declare. It is used to make sure an output (prin) has been done.
      */
     private void initGlobalVar(){
+        //TODO  the way I go through this is really bad.
+        // it would be useful to create an iterator into scope to would give one IdInfo after another ordered by "addressPCode"
+        //and then just init each var or array with corresponding size they required
+        //List<IdInfo> a = symTable.getGlobalScope().getIdInfoOrderedByAddressPCode();
         printer.printComments("Initialize Global Variables");
         int i;
         for (i = nEnvVars; i < totnbVar; i++) {

@@ -1,8 +1,6 @@
 package be.unamur.info.b314.compiler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * define a object to store variables with the same scope
@@ -57,6 +55,12 @@ public class Scope {
         }
     }
 
+    public List<IdInfo> getIdInfoOrderedByAddressPCode(){
+        List<IdInfo> mapValues = new ArrayList<>(scope.values());
+        Collections.sort(mapValues, Comparator.comparing(IdInfo::getAddressPCode));
+        return mapValues;
+    }
+
     public String getName() {
         return name;
     }
@@ -78,6 +82,7 @@ public class Scope {
         }
         return "";
     }
+
 
     public void printScope() {
 
@@ -161,6 +166,20 @@ class IdInfo {
 
     public int getAddressPCode(){
         return addressPCode;
+    }
+
+    public int getNextAddress(){
+        return addressPCode + getsize();
+    }
+
+    public int getsize(){
+        if(dimension.length == 0){
+            return 1;
+        }else if(dimension.length == 1){
+            return dimension[0];
+        }else{
+            return dimension[0]*dimension[1];
+        }
     }
 
     public String getDimensionInfo() {
