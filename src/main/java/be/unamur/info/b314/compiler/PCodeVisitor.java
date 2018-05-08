@@ -107,28 +107,26 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
      * An extra boolean variable is declare. It is used to make sure an output (prin) has been done.
      */
     private void initGlobalVar(){
-        //TODO  the way I go through this is really bad.
-        // it would be useful to create an iterator into scope to would give one IdInfo after another ordered by "addressPCode"
-        //and then just init each var or array with corresponding size they required
-        //List<IdInfo> a = symTable.getGlobalScope().getIdInfoOrderedByAddressPCode();
-        printer.printComments("Initialize Global Variables");
-        int i;
-        for (i = nEnvVars; i < totnbVar; i++) {
 
-            PCodeTypes type = stringToPCodeType(symTable.getGlobalScope().getTypeByAddressPCode(i-nEnvVars));
-            printer.printLoadAdress(type, 0, i);
-            printer.printRead();
-            if(type.name().equals("Bool")){
-                printer.printLoadConstant(PCodeTypes.Int,1);
-                printer.printEqualsValues(PCodeTypes.Int);
+        int currentAddress = nEnvVars;
+        //for each var in Global scope
+        for (IdInfo x:symTable.getGlobalScope().getIdInfoOrderedByAddressPCode()) {
+            //init a number of var in PCode equals to the size required by the var (e.g. array[3,2] = 6 var to init
+            for (int i = 0; i < x.getsize(); i++) {
+                PCodeTypes type = stringToPCodeType(x.getDataType());
+                printer.printLoadAdress(type, 0, currentAddress++);
+                printer.printRead();
+                if(type.name().equals("Bool")){
+                    printer.printLoadConstant(PCodeTypes.Int,1);
+                    printer.printEqualsValues(PCodeTypes.Int);
+                }
+                printer.printStore(type);
             }
-
-            printer.printStore(type);
         }
-        printer.printLoadAdress(PCodeTypes.Bool, 0, i);
+        printFlagAddress = currentAddress;
+        printer.printLoadAdress(PCodeTypes.Bool, 0, printFlagAddress);
         printer.printLoadConstant(PCodeTypes.Bool,1);
         printer.printStore(PCodeTypes.Bool);
-        printFlagAddress = i;
     }
 
     @Override
