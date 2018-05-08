@@ -57,6 +57,7 @@ public class Scope {
 
     public List<IdInfo> getIdInfoOrderedByAddressPCode(){
         List<IdInfo> mapValues = new ArrayList<>(scope.values());
+        mapValues.removeIf(obj -> obj.getIdType().equals("fct"));
         Collections.sort(mapValues, Comparator.comparing(IdInfo::getAddressPCode));
         return mapValues;
     }

@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="1718_INFOB314_COMPILATEUR_GROUPE12" />
+        <module name="b314-compiler" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="1718_INFOB314_COMPILATEUR_GROUPE12" target="1.8" />
+      <module name="b314-compiler" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
