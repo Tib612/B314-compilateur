@@ -114,7 +114,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             for (int i = 0; i < x.getsize(); i++) {
                 PCodeTypes type = stringToPCodeType(x.getDataType());
                 printer.printLoadAdress(type, 0, currentAddress++);
-                printer.printRead();
+                // printer.printRead();
                 if(type.name().equals("Bool")){
                     printer.printLoadConstant(PCodeTypes.Int,1);
                     printer.printEqualsValues(PCodeTypes.Int);
