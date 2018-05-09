@@ -103,10 +103,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
     /**
      * Initialize Global Variables
-     * An extra boolean variable is declare. It is used to make sure an output (prin) has been done.
+     * Ref section 4.2: The booleans are initialized to false 
+     *      and the integers/squares are initialized to 0
+     * An extra boolean variable is declared. 
+     *      It is used to make sure an output (prin) has been done.
      */
     private void initGlobalVar(){
-
         int currentAddress = nEnvVars;
         //for each var in Global scope
         for (IdInfo x:symTable.getGlobalScope().getIdInfoOrderedByAddressPCode()) {
@@ -114,14 +116,11 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             for (int i = 0; i < x.getSize(); i++) {
                 PCodeTypes type = stringToPCodeType(x.getDataType());
                 printer.printLoadAdress(type, 0, currentAddress++);
-                // printer.printRead();
-                // if(type.name().equals("Bool")){
-                    // printer.printLoadConstant(PCodeTypes.Int,1);
-                    // printer.printEqualsValues(PCodeTypes.Int);
-                // }
-                // printer.printStore(type);
+                printer.printLoadConstant(type, 0);
+                printer.printStore(type);
             }
         }
+
         printFlagAddress = currentAddress;
         printer.printLoadAdress(PCodeTypes.Bool, 0, printFlagAddress);
         printer.printLoadConstant(PCodeTypes.Bool,1);
