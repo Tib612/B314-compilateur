@@ -133,6 +133,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         if(ctx.action() != null){
             visitAction(ctx.action());
         }else if(ctx.THEN() != null){
+            defineCounter++;
             printer.printComments("if then (else)");
             visitExprBool(ctx.exprBool());
             printer.printFalseJump("else"+defineCounter);
@@ -149,8 +150,8 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 printer.printDefineLabel("else"+defineCounter);
             }
             printer.printDefineLabel("endif"+defineCounter);
-            defineCounter++;
         }else if(ctx.WHILE() != null){
+            defineCounter++;
             printer.printComments("while");
             printer.printDefineLabel("while"+defineCounter);
             visitExprBool(ctx.exprBool());
@@ -355,10 +356,11 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitFctCall(ctx.ID().getText(),ctx.exprD());
         }else if(ctx.LPAR() != null){
             visitExprBool(ctx.exprBool(0));
-        }else if(ctx.exprG().size() != 0 && ctx.EQUAL() != null){
-            visitExprG(ctx.exprG(0));
-            visitExprG(ctx.exprG(1));
-            printer.printEqualsValues(PCodeTypes.Bool);
+        // this case does not exist (ref. B314.g4)
+        // }else if(ctx.exprG().size() != 0 && ctx.EQUAL() != null){
+        //     visitExprG(ctx.exprG(0));
+        //     visitExprG(ctx.exprG(1));
+        //     printer.printEqualsValues(PCodeTypes.Bool);
         }else if(ctx.exprCase().size() != 0 && ctx.EQUAL() != null){
             visitExprCase(ctx.exprCase(0));
             visitExprCase(ctx.exprCase(1));
@@ -380,7 +382,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 printer.printAnd();
             }else if(ctx.OR() != null){
                 printer.printOr();
-            }else if(ctx.BIGGER() != null){
+            // }else if(ctx.BIGGER() != null){ 
+            // ref B314.g4: exprBool (AND | OR | EQUAL) exprBool
+            } else if (ctx.EQUAL() != null) {
                 printer.printEqualsValues(PCodeTypes.Bool);
             }
         }else if(ctx.exprG() != null){
