@@ -540,7 +540,6 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
 
         addressExprG(ctx);
 
-
         PCodeTypes type= stringToPCodeType(symTable.getIdInfo(ctx.ID().getText()).getDataType());
         printer.printIndexedFetch(type);
         return null;
@@ -591,15 +590,16 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             }
         }
 
-        if(ctx.exprEnt().size() != 0) {
-            if (ctx.exprEnt().size() == 2) {
-                IdInfo info = symTable.getIdInfo(ctx.ID().getText());
-                visitExprEnt(ctx.exprEnt(1));
-                printer.printIndexedAdressComputation(info.getDimensionArray()[0]);
-            }
+        if(ctx.exprEnt().size() == 1) {
             visitExprEnt(ctx.exprEnt(0));
             printer.printIndexedAdressComputation(1);
-        }
+        } else if (ctx.exprEnt().size() == 2) { 
+            IdInfo info = symTable.getIdInfo(ctx.ID().getText());
+            visitExprEnt(ctx.exprEnt(0));
+            printer.printIndexedAdressComputation(info.getDimensionArray()[0]);
+            visitExprEnt(ctx.exprEnt(1));
+            printer.printIndexedAdressComputation(1);
+        } 
         return null;
     }
 }
