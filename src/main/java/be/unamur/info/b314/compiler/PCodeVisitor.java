@@ -364,31 +364,23 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitExprCase(ctx.exprCase(1));
             printer.printEqualsValues(PCodeTypes.Int);
         }else if(ctx.exprEnt() != null && ctx.exprEnt().size() != 0 ){
+            visitExprEnt(ctx.exprEnt(0));
+            visitExprEnt(ctx.exprEnt(1));
             if(ctx.EQUAL() != null){
-                visitExprEnt(ctx.exprEnt(0));
-                visitExprEnt(ctx.exprEnt(1));
                 printer.printEqualsValues(PCodeTypes.Int);
             }else if(ctx.SMALLER() != null){
-                visitExprEnt(ctx.exprEnt(0));
-                visitExprEnt(ctx.exprEnt(1));
                 printer.printLess(PCodeTypes.Int);
             }else if(ctx.BIGGER() != null){
-                visitExprEnt(ctx.exprEnt(0));
-                visitExprEnt(ctx.exprEnt(1));
                 printer.printGreather(PCodeTypes.Int);
             }
         }else if(ctx.exprBool() != null && ctx.exprBool().size() != 0){
+            visitExprBool(ctx.exprBool(0));
+            visitExprBool(ctx.exprBool(1));
             if(ctx.AND() != null){
-                visitExprBool(ctx.exprBool(0));
-                visitExprBool(ctx.exprBool(1));
                 printer.printAnd();
             }else if(ctx.OR() != null){
-                visitExprBool(ctx.exprBool(0));
-                visitExprBool(ctx.exprBool(1));
                 printer.printOr();
             }else if(ctx.BIGGER() != null){
-                visitExprBool(ctx.exprBool(0));
-                visitExprBool(ctx.exprBool(1));
                 printer.printEqualsValues(PCodeTypes.Bool);
             }
         }else if(ctx.exprG() != null){
@@ -417,22 +409,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitExprD(B314Parser.ExprDContext ctx) {
         printer.printComments("expr D: "+ctx.getText());
 
-        if(ctx.exprG() != null){
-            visitExprG(ctx.exprG());
-        }else if(ctx.ID() != null){
+        if(ctx.ID() != null){
             visitFctCall(ctx.ID().getText(),ctx.exprD());
-        }else if(ctx.exprCase() != null){
-            visitExprCase(ctx.exprCase());
-        }else if(ctx.exprEnt() != null){
-            visitExprEnt(ctx.exprEnt());
-        }else if(ctx.exprD().size() != 0){
-            LOG.debug(ctx.exprD().toString());
-            visitExprD(ctx.exprD(0));
-        }else if(ctx.exprBool() != null){
-            visitExprBool(ctx.exprBool());
-        }else {
-            printer.printComments("strange");
+        else {
+            visitChildren(ctx);   
         }
+        
         return null;
     }
 
