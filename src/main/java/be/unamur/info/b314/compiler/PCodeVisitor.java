@@ -409,12 +409,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     public Void visitExprD(B314Parser.ExprDContext ctx) {
         printer.printComments("expr D: "+ctx.getText());
 
-        if(ctx.ID() != null){
-            visitFctCall(ctx.ID().getText(),ctx.exprD());
-        else {
+        if (ctx.ID() != null) {
+            visitFctCall(ctx.ID().getText(), ctx.exprD());
+        } else {
             visitChildren(ctx);   
         }
-        
+
         return null;
     }
 
