@@ -499,11 +499,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             else
                 printer.printLoadAdress(PCodeTypes.Int,1,17);
 
-            if (ctx.exprEnt().size() == 2) {
-                visitExprEnt(ctx.exprEnt(1));
-                printer.printIndexedAdressComputation(9);
-            }
             visitExprEnt(ctx.exprEnt(0));
+            printer.printIndexedAdressComputation(9);
+            visitExprEnt(ctx.exprEnt(1));
             printer.printIndexedAdressComputation(1);
             printer.printIndexedFetch(PCodeTypes.Int);
         }else if(ctx.DIRT() != null){
