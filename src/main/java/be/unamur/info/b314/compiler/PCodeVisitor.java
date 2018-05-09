@@ -134,6 +134,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
             visitAction(ctx.action());
         }else if(ctx.THEN() != null){
             defineCounter++;
+            int currentCounterVal = defineCounter;
             printer.printComments("if then (else)");
             visitExprBool(ctx.exprBool());
             printer.printFalseJump("else"+defineCounter);
@@ -142,25 +143,26 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 if(ctx.getChild(i) instanceof B314Parser.InstructionContext) {
                     visitInstruction((B314Parser.InstructionContext)ctx.getChild(i));
                 }else if(ctx.getChild(i).getText().equals("else")){
-                    printer.printUnconditionalJump("endif"+defineCounter);
-                    printer.printDefineLabel("else"+defineCounter);
+                    printer.printUnconditionalJump("endif"+currentCounterVal);
+                    printer.printDefineLabel("else"+currentCounterVal);
                 }
             }
             if(ctx.ELSE() == null){
-                printer.printDefineLabel("else"+defineCounter);
+                printer.printDefineLabel("else"+currentCounterVal);
             }
-            printer.printDefineLabel("endif"+defineCounter);
+            printer.printDefineLabel("endif"+currentCounterVal);
         }else if(ctx.WHILE() != null){
             defineCounter++;
+            int currentCounterVal = defineCounter;
             printer.printComments("while");
-            printer.printDefineLabel("while"+defineCounter);
+            printer.printDefineLabel("while"+currentCounterVal);
             visitExprBool(ctx.exprBool());
-            printer.printFalseJump("endwhile"+defineCounter);
+            printer.printFalseJump("endwhile"+currentCounterVal);
             for(int i=0;i<ctx.instruction().size();i++) {
                 visitInstruction(ctx.instruction(i));
             }
-            printer.printUnconditionalJump("while"+defineCounter);
-            printer.printDefineLabel("endwhile"+defineCounter);
+            printer.printUnconditionalJump("while"+currentCounterVal);
+            printer.printDefineLabel("endwhile"+currentCounterVal);
         }else if(ctx.SET() != null){
 
             addressExprG(ctx.exprG());
