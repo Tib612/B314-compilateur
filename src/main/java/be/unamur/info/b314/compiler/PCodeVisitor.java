@@ -92,6 +92,12 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
                 printer.printLoadConstant(PCodeTypes.Int,1);
                 printer.printEqualsValues(PCodeTypes.Int);
                 printer.printStore(PCodeTypes.Bool);
+            }else if(i == 17){
+                printer.printLoadAdress(PCodeTypes.Int, 0, i);
+                printer.printRead();
+                printer.printPop();
+                printer.printLoadConstant(PCodeTypes.Int,2);
+                printer.printStore(PCodeTypes.Int);
             }else {
                 printer.printLoadAdress(PCodeTypes.Int, 0, i);
                 printer.printRead();
