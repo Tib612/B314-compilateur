@@ -6,7 +6,6 @@ import be.unamur.info.b314.compiler.PCodePrinter.PCodeTypes;
 /**
  * Print PCode for a given tree using provided symbol table and printer. This 
  * class uses ANTLR visitor mechanism.
- * @author Xavier Devroey - xavier.devroey@unamur.be
  */
 public class PCodeVisitor extends B314BaseVisitor<Object> {
 
@@ -110,7 +109,7 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
     private void initGlobalVar(){
         int currentAddress = nEnvVars;
         //for each var in Global scope
-        for (IdInfo x:symTable.getGlobalScope().getIdInfoOrderedByAddressPCode()) {
+        for (IdInfo x:symTable.getGlobalScope().getAllVar()) {
             //init a number of var in PCode equals to the size required by the var (e.g. array[3,2] = 6 var to init
             for (int i = 0; i < x.getSize(); i++) {
                 PCodeTypes type = stringToPCodeType(x.getDataType());
@@ -550,10 +549,9 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
      * @return
      */
 
-    //private  PCodeTypes previous = null;
     private PCodeTypes stringToPCodeType(String typeString){
 
-        PCodeTypes type =  PCodeTypes.Int;//= previous;
+        PCodeTypes type =  PCodeTypes.Int;
         if(typeString.equals("boolean")){
             type = PCodeTypes.Bool;
         }else if(typeString.equals("integer")){
@@ -561,7 +559,6 @@ public class PCodeVisitor extends B314BaseVisitor<Object> {
         }else if(typeString.equals("square")){
             type = PCodeTypes.Int;
         }
-        //previous = type;
         return type;
     }
 
