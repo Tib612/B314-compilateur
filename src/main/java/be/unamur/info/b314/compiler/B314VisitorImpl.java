@@ -282,11 +282,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     private void visitChildren(RuleNode ctx, String scope) {
         symTable.createNewScope(scope);
         visitChildren(ctx);
-        //don't delete the scope for the functions, it is required to check their return type
-        //don't delete any scope actually, we need them for P-Code
-        //if (scope.equals("when") || scope.equals("default")) {
-        //    symTable.deleteScope(scope);
-        //}
     }
 
     /**

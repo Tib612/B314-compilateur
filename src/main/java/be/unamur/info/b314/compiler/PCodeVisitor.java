@@ -1,12 +1,7 @@
 package be.unamur.info.b314.compiler;
 
 import java.util.List;
-import java.util.Map;
-
 import be.unamur.info.b314.compiler.PCodePrinter.PCodeTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Print PCode for a given tree using provided symbol table and printer. This 
@@ -15,10 +10,8 @@ import org.slf4j.LoggerFactory;
  */
 public class PCodeVisitor extends B314BaseVisitor<Object> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PCodeVisitor.class);
 
     private final SymbolsTable symTable;
-
     private final PCodePrinter printer;
     private final int nEnvVars = 99;
     private int totnbVar;

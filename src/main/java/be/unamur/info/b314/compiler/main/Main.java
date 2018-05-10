@@ -158,15 +158,11 @@ public class Main {
         LOG.debug("Parsing input: done");
         LOG.debug("AST is {}", tree.toStringTree(parser));
 
-        // LOG.debug("Verifying input");
         B314VisitorImpl visitor = new B314VisitorImpl();
         visitor.visit(tree);
 
-        // visitor.printSymbolsTable();
-
         // Build symbol table
         LOG.debug("Building symbol table");
-        //Map<String, Integer> symTable = fillSymTable(tree);
         LOG.debug("Building symbol table: done");
         // Print PCode
         LOG.debug("Printing PCode");
@@ -183,7 +179,6 @@ public class Main {
         CommonTokenStream tokens = new CommonTokenStream(new B314Lexer(input));
         // Intialise parser
         parser = new B314Parser(tokens);
-        // parser.setTrace(true);
         // Set error listener to adoc implementation
         parser.removeErrorListeners();
         MyConsoleErrorListener errorListener = new MyConsoleErrorListener();
@@ -200,17 +195,6 @@ public class Main {
         }
         return tree;
     }
-
-    /**
-     * Builds symbol table from AST.
-     */
-    private Map<String, Integer> fillSymTable(B314Parser.ProgrammeContext tree) {
-        SymTableFiller filler = new SymTableFiller();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(filler, tree);
-        return filler.getSymTable();
-    }
-
 
     /**
      * Print PCode from AST and symtable.
