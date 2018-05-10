@@ -5,15 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Map;
-
 import be.unamur.info.b314.compiler.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -133,7 +129,6 @@ public class Main {
         // Get given files and check they exist
         inputFile = new File(line.getOptionValue(INPUT));
         checkArgument(inputFile.exists() && inputFile.isFile(), "File %s not found!", inputFile.getName());
-        LOG.debug("Input file set to {}", inputFile.getPath());
 
         outputFile = new File(line.getOptionValue(OUTPUT));
         if(!outputFile.exists()){
@@ -156,7 +151,6 @@ public class Main {
         LOG.debug("le fichier de test est:\n"+a.toString());
         B314Parser.ProgrammeContext tree = parse(a);
         LOG.debug("Parsing input: done");
-        LOG.debug("AST is {}", tree.toStringTree(parser));
 
         B314VisitorImpl visitor = new B314VisitorImpl();
         visitor.visit(tree);

@@ -1,13 +1,10 @@
 package be.unamur.info.b314.compiler;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.RuleNode;
 import be.unamur.info.b314.compiler.exception.*;
-
 import java.util.ArrayList;
 
 
@@ -20,8 +17,6 @@ import java.util.ArrayList;
  */
 public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
-
-    private static final Logger LOG = LoggerFactory.getLogger(B314VisitorImpl.class);
 
     private SymbolsTable symTable;
 
@@ -88,12 +83,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
     private Void addFunctionToSymbolsTable(B314Parser.FctDeclContext ctx) {
         String nomFct = ctx.ID().toString();
-        LOG.debug("Visit 2: FctDecl");
-        if (ctx.VOID().size() == 2) {
-            LOG.debug("function name = '" + nomFct + "' output = void");
-        } else {
-            LOG.debug("function name = '" + nomFct + "' output = " + ctx.scalar().getText());
-        }
 
         // check if id existed
         if (symTable.getGlobalScope().containsKey(nomFct)) {
@@ -111,7 +100,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                 }
             }
         }
-        LOG.debug("nb arg: " + argsTypes.size());
 
 
         if (ctx.VOID().size() == 0) {
@@ -133,8 +121,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      */
     @Override
     public Void visitVarDecl(B314Parser.VarDeclContext ctx) {
-
-        LOG.debug("Visit 1: VarDecl (0)");
 
         String id = ctx.ID().getText();
         ParseTree type = ctx.type().getChild(0);
@@ -176,8 +162,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                         "Error at " + ctxText + ": Arena must be a two-dimensional array!");
             }
 
-            LOG.debug("A scalar variable declared: " + typeStr + " " + id + " in scope: " + scopeName);
-            
             symTable.getScope(scopeName).putVar(id, typeStr, null);
 
         } else {
@@ -204,8 +188,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                 throw new ArenaDeclarationException("Error at " + ctxText + ": Arena error!");
             }
 
-            LOG.debug("A " + dimension + "D array of type " + typeStr + " was declared and named " + id);
-
             symTable.getScope(scopeName).putVar(id, typeStr, dimSizes);
         }
     }
@@ -220,8 +202,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
     public Void visitFctDecl(B314Parser.FctDeclContext ctx) {
 
         String nomFct = ctx.ID().toString();
-        LOG.debug("Visit 2: FctDecl");
-
         visitChildren(ctx, nomFct);
 
         //verifier que le type retourné est du même type que le type de retour de la fonction
@@ -255,7 +235,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      */
     @Override
     public Void visitClauseWhen(B314Parser.ClauseWhenContext ctx) {
-        LOG.debug("Visit 3: when");
         visitChildren(ctx, "_when");
 
         return null;
@@ -269,7 +248,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
      */
     @Override
     public Void visitClauseDefault(B314Parser.ClauseDefaultContext ctx) {
-        LOG.debug("Visit 4: default");
         visitChildren(ctx, "_default");
 
         return null;
@@ -386,14 +364,11 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
 
     private void CheckFunctionArgsType(B314Parser.ExprDContext ctx, ArrayList<String> argsTypes) {
 
-
-        LOG.debug("WTF" + argsTypes.get(0));
         int i = 0;
         for (int j = 0; j < ctx.getChildCount() && !ctx.getChild(j).getText().equals(")"); j++) {
 
 
             if (ctx.getChild(j) instanceof B314Parser.ExprDContext) {
-                LOG.debug("LOL" + j);
                 switch (argsTypes.get(i)) {
                     case "boolean":
                         if (!(ctx.getChild(j).getChild(0) instanceof B314Parser.ExprBoolContext)) {
@@ -439,7 +414,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
         visitChildren(ctx);
 
         if (ctx.getStart().getType() == B314Parser.SET) {
-            LOG.debug("An affect instruction found!: " + ctx.getText());
             checkAffectInstruction(ctx);
         }
 
@@ -520,7 +494,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
                 type = getRhsExprType(rhsExpr.exprD(0));
             }
         }
-        LOG.debug("le type de l'RHS est: " + type);
         return type;
     }
 
@@ -619,9 +592,6 @@ public class B314VisitorImpl extends B314BaseVisitor<Void> {
             IdInfo lhsInfo2 = symTable.getIdInfo(lhsId2);
             String lhsType2 = lhsInfo2.getDataType();
             int lhsDim2 = lhsInfo2.getDimension();
-
-            LOG.debug(lhsId +
-                    " Type " + lhsType + lhsDim + " is compared to " + lhsId2 + " Type " + lhsType2 + lhsDim2 + ".");
 
             if (!lhsType.equals(lhsType2)) {
                 symTable.printSymbolsTable();
