@@ -1,4 +1,4 @@
-package be.unamur.info.b314.compiler;
+package be.unamur.info.b314.compiler.symbolsTable;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @specfield dimension for an array-type variable, this field represents its number of dimensions.
  * for scalar-type variable and function, dimension = null.
  */
-class IdInfo {
+public class IdInfo {
 
     private String idType;
     private String dataType;

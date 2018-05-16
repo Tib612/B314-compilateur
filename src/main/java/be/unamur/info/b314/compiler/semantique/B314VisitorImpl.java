@@ -1,6 +1,11 @@
-package be.unamur.info.b314.compiler;
+package be.unamur.info.b314.compiler.semantique;
 
 
+import be.unamur.info.b314.compiler.B314BaseVisitor;
+import be.unamur.info.b314.compiler.B314Parser;
+import be.unamur.info.b314.compiler.symbolsTable.IdInfo;
+import be.unamur.info.b314.compiler.symbolsTable.Scope;
+import be.unamur.info.b314.compiler.symbolsTable.SymbolsTable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.RuleNode;

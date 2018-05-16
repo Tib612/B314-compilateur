@@ -1,7 +1,12 @@
-package be.unamur.info.b314.compiler;
+package be.unamur.info.b314.compiler.codeGen;
 
 import java.util.List;
-import be.unamur.info.b314.compiler.PCodePrinter.PCodeTypes;
+
+import be.unamur.info.b314.compiler.B314BaseVisitor;
+import be.unamur.info.b314.compiler.B314Parser;
+import be.unamur.info.b314.compiler.symbolsTable.IdInfo;
+import be.unamur.info.b314.compiler.symbolsTable.SymbolsTable;
+import be.unamur.info.b314.compiler.codeGen.PCodePrinter.PCodeTypes;
 
 /**
  * Print PCode for a given tree using provided symbol table and printer. This 

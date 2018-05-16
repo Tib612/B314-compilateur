@@ -1,8 +1,6 @@
 package be.unamur.info.b314.compiler.exception;
 
 
-import be.unamur.info.b314.compiler.SymbolsTable;
-
 public class TypeMismatchException extends RuntimeException {
 
     public TypeMismatchException(String message, Exception e) {

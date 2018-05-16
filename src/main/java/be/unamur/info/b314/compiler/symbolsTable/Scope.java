@@ -1,4 +1,4 @@
-package be.unamur.info.b314.compiler;
+package be.unamur.info.b314.compiler.symbolsTable;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package be.unamur.info.b314.compiler;
+package be.unamur.info.b314.compiler.codeGen;
 
 import com.google.common.base.Preconditions;
 import java.io.File;
